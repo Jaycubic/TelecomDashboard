@@ -1,0 +1,38 @@
+/* src/components/Header/Header.css */
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-panel);
+}
+
+.header__title {
+  font-size: var(--step-4);
+}
+
+.header__subtitle {
+  margin-top: 4px;
+  color: var(--color-ink-soft);
+  font-size: var(--step-1);
+}
+
+.header__status {
+  font-size: var(--step-1);
+  white-space: nowrap;
+}
+
+.header__status--ok {
+  color: #3a7d3f;
+}
+
+.header__status--loading {
+  color: var(--color-ink-soft);
+}
+
+.header__status--error {
+  color: var(--color-airtel);
+  font-weight: 500;
+}

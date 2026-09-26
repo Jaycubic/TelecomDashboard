@@ -1,0 +1,20 @@
+/* src/components/Radar/RadarProfile.css */
+
+.radar-profile {
+  display: flex;
+  flex-direction: column;
+}
+
+.radar-profile__note {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+  line-height: 1.5;
+}
+
+.radar-profile__empty {
+  color: var(--color-ink-soft);
+  font-size: var(--step-1);
+  padding: 24px 0;
+  text-align: center;
+}
