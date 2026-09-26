@@ -78,7 +78,7 @@ pnpm-debug.log*
 
 # Raw bulk data files / CSV exports (~1.5M rows)
 data/
-*.csv
+
 
 # ---------------------------------------------------------------------
 # OS & Editor Metadata
