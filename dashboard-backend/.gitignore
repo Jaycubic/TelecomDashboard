@@ -18,5 +18,4 @@ env/
 # Ingest output & dataset dumps
 rejected_rows.csv
 unmapped_states.log
-*.csv
 data/
