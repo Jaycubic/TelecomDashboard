@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { FilterOptionsResponse } from '../../types';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
 import './FilterBar.css';
@@ -11,7 +11,6 @@ interface FilterBarProps {
   carrierVisibility: CarrierVisibility;
   onCarrierVisibilityChange: (visibility: CarrierVisibility) => void;
   filterOptions: FilterOptionsResponse | null;
-  embedded?: boolean;
 }
 
 type ViewMode = 'compare' | 'Airtel' | 'Jio';
@@ -25,7 +24,6 @@ export function FilterBar({
   carrierVisibility,
   onCarrierVisibilityChange,
   filterOptions,
-  embedded = false,
 }: FilterBarProps) {
   const yearMin = filterOptions?.year_min ?? 2021;
   const yearMax = filterOptions?.year_max ?? 2025;
@@ -46,10 +44,6 @@ export function FilterBar({
     yearRange[1] !== yearMax ||
     viewMode !== 'compare';
 
-  const years = useMemo(
-    () => Array.from({ length: Math.max(0, yearMax - yearMin + 1) }, (_, i) => yearMin + i),
-    [yearMin, yearMax],
-  );
 
   const setYearModeSafe = (mode: YearMode) => {
     setYearMode(mode);
@@ -74,7 +68,7 @@ export function FilterBar({
   };
 
   return (
-    <div className={`filterbar ${embedded ? 'filterbar--embedded' : ''}`} role="region" aria-label="Dashboard filters">
+    <div className="filterbar" role="region" aria-label="Dashboard filters">
       <div className="filterbar__inner">
         <div className="filterbar__group filterbar__group--operator">
           <span className="filterbar__eyebrow">Network view</span>
@@ -179,8 +173,11 @@ export function FilterBar({
             </div>
           )}
           <div className="year-control-hint">
-            <span>{yearMode === 'single' ? 'Single year' : 'Selected period'}</span>
-            <span className="year-control-available" aria-hidden="true">{years[0]}–{years[years.length - 1]}</span>
+            <span>
+              {yearMode === 'single'
+                ? 'One year'
+                : 'Summarises the selected period'}
+            </span>
           </div>
         </div>
 

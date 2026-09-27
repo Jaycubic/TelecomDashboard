@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { INDIA_STATE_FEATURES, buildProjection } from '../../lib/geo';
 import { formatNumber, formatPct } from '../../lib/format';
 import { toGeoJsonStateName } from '../../lib/stateNameMap';
@@ -15,6 +15,7 @@ interface IndiaMapProps {
   selectedState: string | undefined;
   onSelectState: (state: string | undefined) => void;
   theme: ThemeMode;
+  children?: ReactNode;
 }
 
 interface TooltipState {
@@ -30,6 +31,7 @@ export function IndiaMap({
   selectedState,
   onSelectState,
   theme,
+  children,
 }: IndiaMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 720, height: 650 });
@@ -42,7 +44,7 @@ export function IndiaMap({
     const observer = new ResizeObserver(([entry]) => {
       if (!entry) return;
       const width = entry.contentRect.width;
-      setSize({ width, height: Math.max(400, Math.min(560, width * .62)) });
+      setSize({ width, height: Math.max(330, Math.min(490, width * .53)) });
     });
     observer.observe(el);
     return () => observer.disconnect();
@@ -77,6 +79,7 @@ export function IndiaMap({
 
   return (
     <section className="map-card">
+      {children}
       <div className="map-card__header">
         <div>
           <div className="section-kicker">Geography</div>

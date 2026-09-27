@@ -3,7 +3,7 @@
 .filterbar__group, .filterbar__field { display: flex; flex-direction: column; gap: 5px; }
 .filterbar__group--operator { min-width: 0; flex: 0 0 auto; }
 .filterbar__field--state { flex: 0 0 152px; }
-.filterbar__field--years { flex: 1 1 auto; min-width: 300px; max-width: 510px; }
+.filterbar__field--years { flex: 1 1 auto; min-width: 280px; max-width: 470px; }
 .filterbar__eyebrow { font-size: 9px; letter-spacing: .09em; text-transform: uppercase; color: var(--color-ink-secondary); font-weight: 800; }
 .operator-toggle { display: inline-flex; padding: 2px; border: 1px solid var(--color-border); background: var(--color-surface-2); border-radius: 10px; width: fit-content; max-width: 100%; }
 .operator-toggle__btn { border: 0; background: transparent; color: var(--color-ink-secondary); border-radius: 7px; padding: 6px 9px; font-size: 10px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: .15s ease; white-space: nowrap; }
@@ -26,17 +26,16 @@
 .single-year-control { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; min-height: 32px; }
 .single-year-control input, .range-year-control input { width: 100%; accent-color: var(--color-ink); }
 .single-year-control output, .range-year-values output { min-width: 42px; text-align: center; padding: 5px 7px; border-radius: 7px; background: var(--color-surface-2); color: var(--color-ink); font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums; border: 1px solid var(--color-border); }
-.range-year-control { display: grid; gap: 4px; }
-.range-year-values { display: flex; align-items: center; gap: 7px; font-size: 9px; color: var(--color-ink-tertiary); }
-.range-year-track { position: relative; height: 24px; display: grid; align-items: center; }
+.range-year-control { display: grid; gap: 2px; }
+.range-year-values { display: flex; align-items: center; gap: 6px; font-size: 9px; color: var(--color-ink-tertiary); }
+.range-year-track { position: relative; height: 18px; display: grid; align-items: center; }
 .range-year-track__fill { position: absolute; height: 4px; left: 0; right: 0; top: 50%; transform: translateY(-50%); background: var(--color-ink); opacity: .22; border-radius: 999px; pointer-events: none; }
 .range-year-track input { position: absolute; inset: 0; pointer-events: none; appearance: none; background: transparent; }
 .range-year-track input::-webkit-slider-runnable-track { height: 4px; background: transparent; }
 .range-year-track input::-moz-range-track { height: 4px; background: transparent; }
 .range-year-track input::-webkit-slider-thumb { appearance: none; pointer-events: auto; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--color-bg); background: var(--color-ink); box-shadow: 0 0 0 1px var(--color-border-strong); margin-top: -4px; cursor: pointer; }
 .range-year-track input::-moz-range-thumb { pointer-events: auto; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--color-bg); background: var(--color-ink); box-shadow: 0 0 0 1px var(--color-border-strong); cursor: pointer; }
-.year-control-hint { display: flex; justify-content: space-between; gap: 10px; font-size: 8px; line-height: 1.2; color: var(--color-ink-tertiary); }
-.year-control-available { flex: 0 0 auto; font-variant-numeric: tabular-nums; }
+.year-control-hint { display: block; font-size: 8px; line-height: 1.2; color: var(--color-ink-tertiary); }
 .filterbar__reset { margin-left: auto; height: 32px; border-radius: 8px; padding: 0 11px; border: 1px solid var(--color-border); background: transparent; color: var(--color-ink-secondary); font-size: 11px; }
 .filterbar__reset:hover:not(:disabled) { color: var(--color-ink); border-color: var(--color-border-strong); background: var(--color-surface-hover); }
 .filterbar__reset:disabled { opacity: .45; cursor: default; }
@@ -51,27 +50,4 @@
   .filterbar__group--operator { width: 100%; }
   .operator-toggle { overflow-x: auto; width: 100%; }
   .filterbar__field--state, .filterbar__field--years { flex: 1 1 100%; }
-}
-
-
-/* Embedded filter treatment: the controls belong to the geographic workbench rather than a separate page section. */
-.filterbar--embedded { position: static; z-index: auto; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; background: var(--color-surface-1); }
-.filterbar--embedded .filterbar__inner { width: auto; min-height: 0; padding: 10px 14px 9px; display: grid; grid-template-columns: minmax(340px, auto) minmax(140px, 160px) minmax(280px, 1fr) auto; align-items: end; gap: 13px; }
-.filterbar--embedded .filterbar__group, .filterbar--embedded .filterbar__field { gap: 4px; }
-.filterbar--embedded .filterbar__field--state { flex: none; }
-.filterbar--embedded .filterbar__field--years { min-width: 0; max-width: none; }
-.filterbar--embedded .operator-toggle__btn { padding: 5px 8px; font-size: 9px; }
-.filterbar--embedded select { height: 30px; }
-.filterbar--embedded .single-year-control { min-height: 30px; }
-.filterbar--embedded .range-year-track { height: 20px; }
-.filterbar--embedded .range-year-values output { padding: 4px 6px; font-size: 9px; }
-.filterbar--embedded .filterbar__reset { height: 30px; }
-@media (max-width: 1040px) {
-  .filterbar--embedded .filterbar__inner { grid-template-columns: minmax(300px, 1fr) minmax(130px, 150px) minmax(240px, 1fr) auto; }
-}
-@media (max-width: 760px) {
-  .filterbar--embedded .filterbar__inner { grid-template-columns: 1fr 1fr; align-items: end; }
-  .filterbar--embedded .filterbar__group--operator { width: auto; grid-column: 1 / -1; }
-  .filterbar--embedded .filterbar__field--state, .filterbar--embedded .filterbar__field--years { flex: none; width: 100%; }
-  .filterbar--embedded .filterbar__reset { margin-left: 0; }
 }

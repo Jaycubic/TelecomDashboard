@@ -1,0 +1,21 @@
+.context-panel { background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: 18px; padding: 16px 16px 12px; min-width: 0; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.context-panel__header { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.context-panel__header h2 { font-size: 15px; letter-spacing: -.025em; margin: 4px 0 5px; }
+.context-panel__header p { font-size: 9px; line-height: 1.45; color: var(--color-ink-secondary); max-width: 360px; }
+.context-panel__legend { display: flex; gap: 9px; flex: 0 0 auto; padding-top: 2px; }
+.context-panel__legend span { display: inline-flex; align-items: center; gap: 5px; color: var(--color-ink-secondary); font-size: 8px; font-weight: 700; }
+.grouped-chart { flex: 1; min-height: 145px; margin-top: 10px; padding: 6px 3px 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; border-top: 1px solid var(--color-border); }
+.grouped-chart__group { min-width: 0; display: flex; flex-direction: column; justify-content: end; align-items: center; }
+.grouped-chart__bars { height: 104px; display: flex; align-items: end; justify-content: center; gap: 8px; width: 100%; border-bottom: 1px solid var(--color-border); padding: 4px 0 0; position: relative; }
+.grouped-chart__bars::before { content: ''; position: absolute; left: 0; right: 0; bottom: 51px; border-top: 1px dashed var(--color-border); opacity: .5; }
+.grouped-bar { display: block; width: 18px; height: 100%; position: relative; background: var(--color-surface-3); border-radius: 6px 6px 2px 2px; overflow: hidden; }
+.grouped-bar__fill { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 2px 2px; }
+.grouped-bar__fill--jio { background: var(--color-jio); }
+.grouped-bar__fill--airtel { background: var(--color-airtel); }
+.grouped-chart__values { display: flex; gap: 8px; margin-top: 4px; color: var(--color-ink-secondary); font-size: 8px; font-variant-numeric: tabular-nums; }
+.grouped-chart__values span:first-child { color: var(--color-jio); }
+.grouped-chart__values span:last-child { color: var(--color-airtel); }
+.grouped-chart__group > strong { margin-top: 4px; color: var(--color-ink); font-size: 9px; }
+.context-panel__note { margin-top: 7px; color: var(--color-ink-tertiary); font-size: 8px; line-height: 1.35; }
+.context-empty { grid-column: 1 / -1; padding: 28px; color: var(--color-ink-secondary); font-size: 11px; }
+@media (max-width: 980px) { .grouped-chart { min-height: 140px; } }

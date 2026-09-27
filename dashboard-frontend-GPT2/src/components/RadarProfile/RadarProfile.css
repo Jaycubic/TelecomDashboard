@@ -1,0 +1,13 @@
+.radar-profile { background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: 18px; padding: 16px 16px 10px; min-height: 0; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.radar-profile__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.radar-profile__head h2 { font-size: 15px; letter-spacing: -.025em; margin: 4px 0 5px; }
+.radar-profile__head p { color: var(--color-ink-secondary); font-size: 9px; line-height: 1.45; max-width: 360px; }
+.radar-profile__legend { display: flex; gap: 9px; padding-top: 2px; flex: 0 0 auto; }
+.radar-profile__legend span { display: inline-flex; align-items: center; gap: 5px; color: var(--color-ink-secondary); font-size: 8px; font-weight: 700; }
+.radar-profile__dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.radar-profile__dot--airtel { background: var(--color-airtel); }
+.radar-profile__dot--jio { background: var(--color-jio); }
+.radar-profile__body { flex: 1; min-height: 170px; margin: 0 -2px; }
+.radar-profile__empty { min-height: 170px; display: grid; place-items: center; color: var(--color-ink-secondary); font-size: 10px; }
+.radar-profile__foot { display: flex; justify-content: space-between; gap: 8px; padding-top: 7px; border-top: 1px solid var(--color-border); color: var(--color-ink-tertiary); font-size: 8px; font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .radar-profile__head { flex-direction: column; } .radar-profile__legend { padding-top: 0; } }

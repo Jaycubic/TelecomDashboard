@@ -65,8 +65,8 @@ export function RadarProfile({ radarAirtel, radarJio, carrierVisibility, theme }
         {!hasData ? (
           <div className="radar-profile__empty">No profile data for the current filters.</div>
         ) : (
-          <ResponsiveContainer width="100%" height={248}>
-            <RadarChart data={data} outerRadius="68%" margin={{ top: 8, right: 12, bottom: 4, left: 12 }}>
+          <ResponsiveContainer width="100%" height={176}>
+            <RadarChart data={data} outerRadius="64%" margin={{ top: 2, right: 4, bottom: 0, left: 4 }}>
               <PolarGrid stroke={chartTheme.grid} />
               <PolarAngleAxis
                 dataKey="axis"

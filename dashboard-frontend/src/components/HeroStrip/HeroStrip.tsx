@@ -26,13 +26,11 @@ export function HeroStrip({ kpis, selectedState, loading, carrierVisibility }: H
     : toNumber(selectedRow?.total_reports) ?? 0;
   const scope = selectedState ? selectedState : 'All India';
 
-  const title = bothVisible
-    ? 'How does customer-reported call quality differ between Airtel and Jio?'
-    : `How is customer-reported call quality on ${selectedOperator} across India?`;
+  const title = 'Customer-reported voice experience';
 
   const subtitle = bothVisible
-    ? 'Start with the national picture, then use the map to see where customer ratings differ by state.'
-    : `Start with the national picture, then use the map to see how ${selectedOperator} ratings vary by state.`;
+    ? 'Compare reported voice-call quality, then use the map to see where ratings differ by state.'
+    : `Explore reported ${selectedOperator} voice-call quality, then use the map to see how ratings vary by state.`;
 
   return (
     <section className="hero">
