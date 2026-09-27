@@ -1,6 +1,6 @@
 .map-card { background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: 18px; overflow: hidden; }
-.map-card__header { padding: 18px 20px 15px; display: flex; justify-content: space-between; align-items: flex-start; gap: 28px; border-bottom: 1px solid var(--color-border); }
-.map-card__header h2 { font-size: 17px; letter-spacing: -.025em; margin: 4px 0 6px; }
+.map-card__header { padding: 24px 26px 20px; display: flex; justify-content: space-between; align-items: flex-start; gap: 28px; border-bottom: 1px solid var(--color-border); }
+.map-card__header h2 { font-size: 20px; letter-spacing: -.025em; margin: 4px 0 6px; }
 .map-card__header p { max-width: 690px; font-size: 12px; line-height: 1.65; color: var(--color-ink-secondary); }
 .section-kicker { text-transform: uppercase; letter-spacing: .11em; font-size: 9px; font-weight: 800; color: var(--color-ink-tertiary); }
 .map-card__legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 11px 15px; max-width: 460px; padding-top: 3px; }
@@ -10,8 +10,8 @@
 .legend-dot--jio { background: var(--color-jio); }
 .legend-dot--similar { background: var(--color-neutral); }
 .legend-hatch { width: 10px; height: 10px; border-radius: 3px; background: repeating-linear-gradient(45deg, var(--color-ink-tertiary) 0 1px, transparent 1px 4px), var(--color-surface-3); border: 1px solid var(--color-border-strong); }
-.map-card__body { padding: 4px 14px 12px; }
-.map-card__canvas { position: relative; width: 100%; min-height: 400px; overflow: hidden; }
+.map-card__body { padding: 8px 20px 18px; }
+.map-card__canvas { position: relative; width: 100%; min-height: 420px; overflow: hidden; }
 .map-svg { display: block; width: 100%; height: auto; }
 .map-svg { --color-map-stroke: rgba(255,255,255,.7); }
 [data-theme='light'] .map-svg { --color-map-stroke: rgba(17,24,39,.15); }

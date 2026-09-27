@@ -42,7 +42,7 @@ export function IndiaMap({
     const observer = new ResizeObserver(([entry]) => {
       if (!entry) return;
       const width = entry.contentRect.width;
-      setSize({ width, height: Math.max(400, Math.min(560, width * .62)) });
+      setSize({ width, height: Math.max(440, width * .86) });
     });
     observer.observe(el);
     return () => observer.disconnect();
@@ -165,7 +165,7 @@ function MapTooltip({ x, y, stateName, rows, lowConfidence }: TooltipState & { r
   const leader = metricLeader(av, jv, 'higherIsBetter', .05);
 
   return (
-    <div className="map-tooltip" style={{ left: Math.min(x + 14, Math.max(8, x - 220)), top: Math.min(y + 14, 455) }} role="tooltip">
+    <div className="map-tooltip" style={{ left: Math.min(x + 14, Math.max(8, x - 220)), top: Math.min(y + 14, 500) }} role="tooltip">
       <div className="map-tooltip__top">
         <strong>{stateName}</strong>
         <span className={leader === 'Airtel' ? 'airtel' : leader === 'Jio' ? 'jio' : ''}>

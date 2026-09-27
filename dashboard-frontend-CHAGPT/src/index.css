@@ -6,7 +6,7 @@
   --color-surface-hover: rgba(17,24,39,.035);
   --color-ink: #16181d;
   --color-ink-secondary: #646a73;
-  --color-ink-tertiary: #7b8189;
+  --color-ink-tertiary: #959aa2;
   --color-border: rgba(17,24,39,.085);
   --color-border-strong: rgba(17,24,39,.16);
   --color-airtel: #c83e2d;
@@ -40,7 +40,7 @@
   --color-surface-hover: rgba(255,255,255,.035);
   --color-ink: #f4f5f7;
   --color-ink-secondary: #a7acb5;
-  --color-ink-tertiary: #8a9099;
+  --color-ink-tertiary: #707783;
   --color-border: rgba(255,255,255,.085);
   --color-border-strong: rgba(255,255,255,.16);
   --color-airtel: #ef6b59;
@@ -63,7 +63,7 @@ button, select, input { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
 .tabular { font-variant-numeric: tabular-nums; }
-.section-kicker { text-transform: uppercase; letter-spacing: .11em; font-size: 9.5px; font-weight: 850; color: var(--color-ink-secondary); }
+.section-kicker { text-transform: uppercase; letter-spacing: .11em; font-size: 9px; font-weight: 800; color: var(--color-ink-tertiary); }
 .airtel { color: var(--color-airtel) !important; }
 .jio { color: var(--color-jio) !important; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; } }

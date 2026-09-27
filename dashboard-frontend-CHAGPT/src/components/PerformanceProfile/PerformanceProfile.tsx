@@ -6,6 +6,7 @@ import './PerformanceProfile.css';
 interface PerformanceProfileProps {
   indoorOutdoor: IndoorOutdoorResponse | null;
   carrierVisibility: CarrierVisibility;
+  theme: 'light' | 'dark';
 }
 
 export function PerformanceProfile({ indoorOutdoor, carrierVisibility }: PerformanceProfileProps) {

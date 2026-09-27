@@ -1,18 +1,14 @@
 import type { ThemeMode } from '../../hooks/useTheme';
 import './TopBar.css';
 
-type DashboardView = 'overview' | 'about';
-
 interface TopBarProps {
   loading: boolean;
   error: string | null;
   theme: ThemeMode;
   onToggleTheme: () => void;
-  activeView: DashboardView;
-  onViewChange: (view: DashboardView) => void;
 }
 
-export function TopBar({ loading, error, theme, onToggleTheme, activeView, onViewChange }: TopBarProps) {
+export function TopBar({ loading, error, theme, onToggleTheme }: TopBarProps) {
   return (
     <header className="topbar">
       <div className="topbar__inner">
@@ -27,25 +23,6 @@ export function TopBar({ loading, error, theme, onToggleTheme, activeView, onVie
             <div className="topbar__sub">Airtel vs Jio · customer-reported voice experience</div>
           </div>
         </div>
-
-        <nav className="topbar__nav" aria-label="Dashboard sections">
-          <button
-            type="button"
-            className={`topbar__nav-btn ${activeView === 'overview' ? 'is-active' : ''}`}
-            onClick={() => onViewChange('overview')}
-            aria-current={activeView === 'overview' ? 'page' : undefined}
-          >
-            Overview
-          </button>
-          <button
-            type="button"
-            className={`topbar__nav-btn ${activeView === 'about' ? 'is-active' : ''}`}
-            onClick={() => onViewChange('about')}
-            aria-current={activeView === 'about' ? 'page' : undefined}
-          >
-            About
-          </button>
-        </nav>
 
         <div className="topbar__actions">
           <div className="topbar__status" role="status" aria-live="polite">
