@@ -34,7 +34,7 @@ export function AboutView() {
           <div className="about-view__legend-row"><span className="about-view__swatch about-view__swatch--jio" /> Jio has the higher reported average rating</div>
           <div className="about-view__legend-row"><span className="about-view__swatch about-view__swatch--neutral" /> Average ratings are similar</div>
           <div className="about-view__legend-row"><span className="about-view__hatch" /> Limited feedback</div>
-          <p className="about-view__note">In a single-network view, the selected operator's hue runs from lighter to darker to represent lower to higher reported average ratings. In comparison mode, red and blue identify operator advantage rather than rating quality. Color is not used to mean “good” or “bad”.</p>
+          <p className="about-view__note">In a single-network view, darker states indicate higher reported average ratings for the selected network. Color is not used to mean "good" or "bad".</p>
         </article>
 
         <article>
@@ -42,8 +42,8 @@ export function AboutView() {
           <h2>Use the numbers without guessing.</h2>
           <p><strong>Customer reports:</strong> the number of customer-submitted voice-call reports represented by the current filters.</p>
           <p><strong>Average customer rating:</strong> the reported overall call-quality score, on a 0–5 scale.</p>
-          <p><strong>Dropped-call report share:</strong> the share of customer reports classified as dropped calls. A lower share means fewer reports fall into that classification.</p>
-          <p><strong>Poor voice-quality report share:</strong> the share of customer reports classified as poor voice quality. A lower share means fewer reports fall into that classification.</p>
+          <p><strong>Dropped-call reports:</strong> the share of reports classified as dropped calls. Lower is a smaller share of dropped-call reports.</p>
+          <p><strong>Poor voice-quality reports:</strong> the share of reports classified as poor voice quality. Lower is a smaller share of those reports.</p>
         </article>
 
         <article>

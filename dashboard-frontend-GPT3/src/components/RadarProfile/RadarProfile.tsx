@@ -21,7 +21,7 @@ interface RadarProfileProps {
 }
 
 const AXIS_LABELS: Record<keyof RadarResponse['axes'], string> = {
-  rating: 'Average rating',
+  rating: 'Rating',
   indoor_quality: 'Indoor',
   outdoor_quality: 'Outdoor',
   network_stability: 'Stability',
@@ -48,12 +48,12 @@ export function RadarProfile({ radarAirtel, radarJio, carrierVisibility, theme }
   const hasData = Boolean(radarAirtel || radarJio);
 
   return (
-    <section className="radar-profile" aria-label="Voice-quality profile">
+    <section className="radar-profile" aria-label="Performance profile">
       <div className="radar-profile__head">
         <div>
-          <div className="section-kicker">Voice-quality profile</div>
-          <h2>Reported voice experience across six measures</h2>
-          <p>Compare six reported quality measures on a common 0–100 visual scale. The rating measure is normalized from 0–5.</p>
+          <div className="section-kicker">Performance profile</div>
+          <h2>Six signals, one shape</h2>
+          <p>See how the two reported experiences differ across quality dimensions. Rating is normalized to the same 0–100 visual scale.</p>
         </div>
         <div className="radar-profile__legend" aria-label="Performance profile legend">
           {carrierVisibility.Airtel && <span><i className="radar-profile__dot radar-profile__dot--airtel" />Airtel</span>}

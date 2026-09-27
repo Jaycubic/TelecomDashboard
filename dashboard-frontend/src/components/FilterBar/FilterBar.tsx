@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { FilterOptionsResponse } from '../../types';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
 import './FilterBar.css';
@@ -35,11 +35,6 @@ export function FilterBar({
     carrierVisibility.Airtel && carrierVisibility.Jio ? 'compare' :
     carrierVisibility.Airtel ? 'Airtel' : 'Jio';
 
-  const setView = (mode: ViewMode) => {
-    if (mode === 'compare') onCarrierVisibilityChange({ Airtel: true, Jio: true });
-    else onCarrierVisibilityChange({ Airtel: mode === 'Airtel', Jio: mode === 'Jio' });
-  };
-
   const isFiltered =
     selectedState !== undefined ||
     yearRange[0] !== yearMin ||
@@ -65,7 +60,7 @@ export function FilterBar({
     onStateChange(undefined);
     onYearRangeChange([yearMin, yearMax]);
     setYearMode('period');
-    setView('compare');
+    onCarrierVisibilityChange({ Airtel: true, Jio: true });
   };
 
   const updateRange = (nextStart: number, nextEnd: number) => {
@@ -76,46 +71,11 @@ export function FilterBar({
   return (
     <div className={`filterbar ${embedded ? 'filterbar--embedded' : ''}`} role="region" aria-label="Dashboard filters">
       <div className="filterbar__inner">
-        <div className="filterbar__group filterbar__group--operator">
-          <span className="filterbar__eyebrow">Network view</span>
-          <div className="operator-toggle" role="group" aria-label="Choose a network view">
-            <button
-              type="button"
-              className={`operator-toggle__btn operator-toggle__btn--jio ${viewMode === 'Jio' ? 'is-active' : ''}`}
-              aria-pressed={viewMode === 'Jio'}
-              onClick={() => setView('Jio')}
-            >
-              <span aria-hidden="true" />
-              Jio only
-            </button>
-            <button
-              type="button"
-              className={`operator-toggle__btn operator-toggle__btn--airtel ${viewMode === 'Airtel' ? 'is-active' : ''}`}
-              aria-pressed={viewMode === 'Airtel'}
-              onClick={() => setView('Airtel')}
-            >
-              <span aria-hidden="true" />
-              Airtel only
-            </button>
-            <button
-              type="button"
-              className={`operator-toggle__btn ${viewMode === 'compare' ? 'is-active operator-toggle__btn--compare' : ''}`}
-              aria-pressed={viewMode === 'compare'}
-              onClick={() => setView('compare')}
-            >
-              <span className="operator-toggle__compare-dots" aria-hidden="true"><i /><i /></span>
-              Compare Airtel + Jio
-            </button>
-          </div>
-        </div>
-
-        <div className="filterbar__field filterbar__field--state">
-          <label className="filterbar__eyebrow" htmlFor="loc-select">State</label>
-          <select id="loc-select" value={selectedState ?? ''} onChange={(e) => onStateChange(e.target.value === '' ? undefined : e.target.value)}>
-            <option value="">All India</option>
-            {(filterOptions?.states ?? []).map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </div>
+        <StateSelect
+          selectedState={selectedState}
+          states={filterOptions?.states ?? []}
+          onStateChange={onStateChange}
+        />
 
         <div className="filterbar__field filterbar__field--years">
           <div className="filterbar__years-head">
@@ -185,6 +145,116 @@ export function FilterBar({
         </div>
 
         <button type="button" className="filterbar__reset" onClick={resetAll} disabled={!isFiltered}>Reset</button>
+      </div>
+    </div>
+  );
+}
+
+function StateSelect({
+  selectedState,
+  states,
+  onStateChange,
+}: {
+  selectedState: string | undefined;
+  states: string[];
+  onStateChange: (state: string | undefined) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const options = useMemo(() => ['All India', ...states.filter((state) => state !== 'All India')], [states]);
+  const filteredOptions = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    if (!normalized) return options;
+    return options.filter((option) => option.toLowerCase().includes(normalized));
+  }, [options, query]);
+
+  const displayValue = selectedState ?? 'All India';
+
+  useEffect(() => {
+    if (!open) return;
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+        setQuery('');
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+        setQuery('');
+      }
+    };
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    window.requestAnimationFrame(() => inputRef.current?.focus());
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
+  const choose = (value: string) => {
+    onStateChange(value === 'All India' ? undefined : value);
+    setOpen(false);
+    setQuery('');
+  };
+
+  return (
+    <div className="filterbar__field filterbar__field--state">
+      <span className="filterbar__eyebrow">State</span>
+      <div className={`state-select ${open ? 'is-open' : ''}`} ref={containerRef}>
+        <button
+          type="button"
+          className="state-select__trigger"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          onClick={() => {
+            setOpen((value) => !value);
+            setQuery('');
+          }}
+        >
+          <span>{displayValue}</span>
+          <span className="state-select__chevron" aria-hidden="true" />
+        </button>
+        {open && (
+          <div className="state-select__menu" role="listbox" aria-label="Choose a state">
+            <div className="state-select__search-wrap">
+              <input
+                ref={inputRef}
+                className="state-select__search"
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="Search states"
+                aria-label="Search states"
+                autoComplete="off"
+              />
+            </div>
+            <div className="state-select__options">
+              {filteredOptions.length ? filteredOptions.map((option) => {
+                const active = option === displayValue;
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    className={`state-select__option ${active ? 'is-active' : ''}`}
+                    role="option"
+                    aria-selected={active}
+                    onClick={() => choose(option)}
+                  >
+                    <span>{option}</span>
+                    {active && <span className="state-select__check" aria-hidden="true">✓</span>}
+                  </button>
+                );
+              }) : (
+                <div className="state-select__empty">No states found.</div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

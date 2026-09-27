@@ -13,17 +13,17 @@ export function PerformanceProfile({ indoorOutdoor, carrierVisibility }: Perform
   const bothVisible = carrierVisibility.Airtel && carrierVisibility.Jio;
 
   return (
-    <section className="context-panel" aria-label="Reported call quality by setting">
+    <section className="context-panel" aria-label="Call setting context">
       <div className="context-panel__header">
         <div>
-          <div className="section-kicker">Call setting</div>
-          <h2>How does reported call quality vary by setting?</h2>
-          <p>Share of customer reports rated satisfactory when the call was made indoors, outdoors, or while travelling.</p>
+          <div className="section-kicker">Context matters</div>
+          <h2>Does the setting change the picture?</h2>
+          <p>Satisfactory-call rate by where the customer reported making the call.</p>
         </div>
         {bothVisible && <div className="context-panel__legend"><span><i className="legend-dot legend-dot--jio" /> Jio</span><span><i className="legend-dot legend-dot--airtel" /> Airtel</span></div>}
       </div>
 
-      <div className="grouped-chart" role="img" aria-label="Grouped bar chart comparing the share of customer reports rated satisfactory indoors, outdoors, and while travelling">
+      <div className="grouped-chart" role="img" aria-label="Grouped bar chart comparing satisfactory-call rates indoors, outdoors, and while travelling">
         {rows.map((row) => {
           const a = row.airtel ?? 0;
           const j = row.jio ?? 0;
@@ -43,7 +43,7 @@ export function PerformanceProfile({ indoorOutdoor, carrierVisibility }: Perform
         })}
         {!rows.length && <div className="context-empty">No context data for the current filters.</div>}
       </div>
-      <p className="context-panel__note">These percentages describe customer reports rated satisfactory, not all calls.</p>
+      <p className="context-panel__note">These percentages describe satisfactory-call reports, not all calls.</p>
     </section>
   );
 }

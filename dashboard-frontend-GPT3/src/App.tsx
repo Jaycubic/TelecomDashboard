@@ -52,7 +52,6 @@ export default function App() {
             selectedState={selectedState}
             loading={loading}
             carrierVisibility={carrierVisibility}
-            onCarrierVisibilityChange={setCarrierVisibility}
           />
 
           <main className="app__main">

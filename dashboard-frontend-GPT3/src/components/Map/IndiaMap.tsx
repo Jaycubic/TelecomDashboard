@@ -83,11 +83,11 @@ export function IndiaMap({
       <div className="map-card__header">
         <div>
           <div className="section-kicker">Geography</div>
-          <h2>{bothVisible ? 'Where do Airtel and Jio ratings differ by state?' : `How does ${selectedOperator}’s reported rating vary across India?`}</h2>
+          <h2>{bothVisible ? 'Where do customer ratings differ?' : `Where is the reported rating higher or lower for ${selectedOperator}?`}</h2>
           <p>{bothVisible
-            ? 'Each state shows which operator has the higher average customer rating. Hatching marks states with limited customer reports.'
-            : `Lighter states indicate lower reported average ratings; darker states indicate higher ratings. Hatching marks states with limited customer reports.`}
-        </p>
+            ? 'Each state shows which operator has the higher average customer rating. Select a state to focus the dashboard.'
+            : `${selectedOperator} is shown as a rating range by state. Darker states represent higher reported average ratings. Select a state to focus the dashboard.`}
+          </p>
         </div>
         <div className="map-card__legend" aria-label="Map legend">
           {bothVisible ? (
@@ -97,14 +97,12 @@ export function IndiaMap({
               <span><i className="legend-dot legend-dot--similar" /> Similar ratings</span>
             </>
           ) : (
-            <span className="map-card__rating-scale">
-              <span>Lower rating</span>
-              <i className={`rating-gradient rating-gradient--${selectedOperator.toLowerCase()}`} aria-hidden="true" />
-              <span>Higher rating</span>
-              <span className="sr-only">Reported average rating from lower to higher</span>
-            </span>
+            <>
+              <span><i className={`rating-swatch rating-swatch--low rating-swatch--low-${selectedOperator.toLowerCase()}`} /> Lower rating</span>
+              <span><i className={`rating-swatch rating-swatch--high rating-swatch--high-${selectedOperator.toLowerCase()}`} /> Higher rating</span>
+            </>
           )}
-          <span><i className="legend-hatch" /> Limited customer reports</span>
+          <span><i className="legend-hatch" /> Limited feedback</span>
         </div>
       </div>
 

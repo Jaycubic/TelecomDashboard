@@ -8,8 +8,8 @@ The opening question adapts to the selected network view: comparison mode asks *
 
 1. **Understand the national snapshot** — a small set of exact values establishes the scale and direction of the comparison.
 2. **See where the gap occurs** — the India map is the main geographic storytelling surface.
-3. **Investigate geography** — clicking a state focuses the dashboard while preserving the map as the primary geographic view.
-4. **Understand supporting dimensions** — the voice-quality profile and call-setting breakdown explain how the reported experience varies beyond the map.
+3. **Inspect a selected state** — clicking the map reveals the exact state values without imposing an arbitrary Top-N ranking.
+4. **Understand context** — indoor, outdoor, and travelling views explain whether the picture changes by call setting.
 5. **Read limitations and provenance** — the About view carries the required interpretation, limitations, and source context.
 
 This avoids treating every available API response as a separate dashboard “card.”
@@ -25,8 +25,8 @@ The first row combines the three core API metrics. They answer **what is being r
 ### Third: the map
 The map is intentionally larger than the supporting charts. In comparison mode it answers the geographic comparison question; in single-network mode it switches to a rating-intensity view for the selected operator.
 
-### Fourth: supporting dimensions
-The voice-quality profile and indoor/outdoor/travelling breakdown are presented after the geographic story because they explain the pattern rather than replace the primary geographic question.
+### Fourth: context
+The indoor/outdoor/travelling breakdown is presented after the geographic story because it is an explanatory layer, not the primary question.
 
 ### Fifth: caveats and provenance
 The About view makes clear what the data represents, what cannot be concluded from customer reports, and where the displayed data came from.
@@ -52,17 +52,17 @@ Shown as an exact percentage with a compact bar.
 ### Poor voice quality
 Shown in the same structure as call drops so the user can scan the three API metrics as one coherent comparison system.
 
-### Voice-quality profile
-A radar chart is retained as a compact secondary view for six reported measures: average rating, indoor quality, outdoor quality, network stability, voice clarity, and coverage.
+### Selected-state detail
+A compact state-detail panel appears beside the map and updates only after the user selects a state.
 
-**Why:** It provides a quick shape-level comparison after the user already understands the exact primary metrics and map. The surrounding text explicitly names the measures and the common 0–100 visual scale so the chart is not left to interpretation alone.
+**Why:** This preserves progressive disclosure: the map gives the overview first, and exact values appear when the user asks for them. No arbitrary Top-N list is imposed.
 
-### Call-setting context
-Satisfactory-call reporting is shown for Indoor, Outdoor, and Travelling using grouped bars.
+### Context breakdown
+Satisfactory rate is shown for Indoor, Outdoor, and Travelling using direct horizontal bars.
 
-**Why:** The context values share a 0–100% scale, so aligned bars support direct comparison while using less space than another complex multi-axis visualization.
+**Why:** The context values share a 0–100% scale, so aligned bars are easier to compare than a multi-axis chart.
 
-**Rejected alternative:** A second radar / donut chart. Either would make small percentage differences harder to compare precisely.
+**Rejected alternative:** Radar chart / donut chart. Neither gives a clean comparison between operators across repeated contexts.
 
 ## 4. Map design
 
@@ -82,7 +82,6 @@ The map deliberately does **not** encode a homemade composite “quality score.�
 - Click or keyboard activation selects a state.
 - Selection cross-filters the rest of the dashboard through the existing API filter path.
 - Non-selected states are visually de-emphasized instead of removed, preserving geographic context.
-- In single-network mode, a light-to-dark operator-color ramp communicates lower-to-higher reported average rating and is paired with an explicit gradient legend.
 
 ### Limited data
 Low-confidence states receive a hatch treatment rather than a separate color. This keeps “who is higher?” visually distinct from “how much data supports the comparison?”
@@ -90,17 +89,17 @@ Low-confidence states receive a hatch treatment rather than a separate color. Th
 ## 5. Filters and interactions
 
 ### Kept
-- Network view (Jio only / Airtel only / Compare Airtel + Jio)
 - State
-- Year mode and range
+- Year range
+- Airtel/Jio visibility
 
-The network view is promoted into the hero because it changes the primary question. State and year controls stay with the map because they scope the geographic analysis directly.
+These correspond to the existing API contract and directly affect interpretation.
 
 ### Removed from the primary UI
 The Region filter is not shown. The existing backend still supports it; the redesign avoids placing a fourth geographic control beside a map + state control because it adds another abstraction level for the main consumer task.
 
 ### Interaction model
-The network selector sits directly beneath the framing statement, while state and year controls sit inside the map card. The state control uses a compact custom dropdown that opens downward, supports quick search, has a fixed-height option list, closes on outside click or Escape, and avoids consuming excessive vertical space.
+The page uses a single filter bar rather than a permanent sidebar. It keeps the content area wide enough for the map and avoids a dashboard-style “control wall.”
 
 ## 6. Color system
 
@@ -111,15 +110,18 @@ Operator colors are **identity colors**, not positive/negative colors.
 - Neutral: graphite/gray.
 - Caution: amber, used for limited-feedback notes.
 
-The same operator colors repeat across map, values, controls, radar, and bars so users learn the visual grammar once. In single-network map mode, the operator hue is used as a magnitude ramp from lighter to darker; the legend explicitly shows that ramp. Magnitude elsewhere is handled through position, bar length, exact values, or chart geometry.
+The same operator colors repeat across map, values, controls, and bars so users learn the visual grammar once. Magnitude is handled separately through position, bar length, exact values, or map intensity.
 
 The redesign avoids relying on red/green to express “good/bad.” The interface also provides explicit labels such as “Airtel higher,” “Jio higher,” and “Similar,” so meaning survives without color.
 
 ## 7. Typography and visual hierarchy
 
-The redesign uses a restrained system-font stack with an editorial serif only for the primary product framing. The headline is now a compact orientation statement rather than a large question, because the dashboard needs to reach the map quickly. Product UI uses system sans-serif, compact labels, and tabular numerals.
+The redesign uses a restrained system-font stack with an editorial serif only for the main question. This creates a deliberate distinction between:
 
-Spacing is used as a structural tool rather than decoration. The information hierarchy intentionally removes repeated metric blocks and moves the primary controls closer to the visualization they affect.
+- **editorial framing** — large question/headline
+- **product UI** — system sans-serif, compact labels, tabular numerals
+
+Spacing is used as a structural tool rather than decoration. Large sections are separated by a small number of consistent radii, border weights, and vertical rhythms.
 
 ## 8. Technical decisions
 
@@ -142,14 +144,13 @@ The frontend was restructured around presentation and analysis helpers rather th
 
 The redesign reduces cognitive load by:
 
-- removing the redundant At-a-Glance section;
-- keeping the four primary measures in one persistent national summary;
-- placing the network choice where users first frame the question;
-- placing state and year controls inside the geographic workbench;
-- using direct, noun-first metric wording such as “Customer reports” and “Dropped-call report share”;
-- making the map the primary exploratory surface;
-- explaining the single-network color ramp instead of leaving hue intensity unexplained;
-- keeping the supporting radar and call-setting views compact and secondary.
+- replacing many independent dashboard cards with a clear reading order;
+- using direct language instead of implementation terminology;
+- keeping exact values visible beside visual encodings;
+- making map selection the primary drill-down interaction;
+- keeping caveats adjacent to the data rather than hiding them in a technical footer;
+- using a single consistent operator color language;
+- avoiding redundant charts that repeat the same comparison.
 
 ## 10. Trade-offs
 
