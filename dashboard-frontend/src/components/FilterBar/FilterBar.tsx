@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react';
 import type { FilterOptionsResponse } from '../../types';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
 import './FilterBar.css';
@@ -13,6 +14,7 @@ interface FilterBarProps {
 }
 
 type ViewMode = 'compare' | 'Airtel' | 'Jio';
+type YearMode = 'single' | 'period';
 
 export function FilterBar({
   selectedState,
@@ -25,6 +27,7 @@ export function FilterBar({
 }: FilterBarProps) {
   const yearMin = filterOptions?.year_min ?? 2021;
   const yearMax = filterOptions?.year_max ?? 2025;
+  const [yearMode, setYearMode] = useState<YearMode>(yearRange[0] === yearRange[1] ? 'single' : 'period');
 
   const viewMode: ViewMode =
     carrierVisibility.Airtel && carrierVisibility.Jio ? 'compare' :
@@ -41,10 +44,31 @@ export function FilterBar({
     yearRange[1] !== yearMax ||
     viewMode !== 'compare';
 
+  const years = useMemo(
+    () => Array.from({ length: Math.max(0, yearMax - yearMin + 1) }, (_, i) => yearMin + i),
+    [yearMin, yearMax],
+  );
+
+  const setYearModeSafe = (mode: YearMode) => {
+    setYearMode(mode);
+    if (mode === 'single') {
+      const current = yearRange[1] || yearMax;
+      onYearRangeChange([current, current]);
+    } else {
+      onYearRangeChange([yearMin, yearMax]);
+    }
+  };
+
   const resetAll = () => {
     onStateChange(undefined);
     onYearRangeChange([yearMin, yearMax]);
+    setYearMode('period');
     setView('compare');
+  };
+
+  const updateRange = (nextStart: number, nextEnd: number) => {
+    if (nextStart <= nextEnd) onYearRangeChange([nextStart, nextEnd]);
+    else onYearRangeChange([nextEnd, nextStart]);
   };
 
   return (
@@ -52,27 +76,38 @@ export function FilterBar({
       <div className="filterbar__inner">
         <div className="filterbar__group filterbar__group--operator">
           <span className="filterbar__eyebrow">Network view</span>
-          <div className="operator-toggle" role="group" aria-label="Choose a comparison or single-network view">
-            <button type="button" className={`operator-toggle__btn ${viewMode === 'compare' ? 'is-active operator-toggle__btn--compare' : ''}`} aria-pressed={viewMode === 'compare'} onClick={() => setView('compare')}>
-              <span className="operator-toggle__compare-dots"><i /><i /></span>
+          <div className="operator-toggle" role="group" aria-label="Choose a network view">
+            <button
+              type="button"
+              className={`operator-toggle__btn operator-toggle__btn--jio ${viewMode === 'Jio' ? 'is-active' : ''}`}
+              aria-pressed={viewMode === 'Jio'}
+              onClick={() => setView('Jio')}
+            >
+              <span aria-hidden="true" />
+              Jio only
+            </button>
+            <button
+              type="button"
+              className={`operator-toggle__btn operator-toggle__btn--airtel ${viewMode === 'Airtel' ? 'is-active' : ''}`}
+              aria-pressed={viewMode === 'Airtel'}
+              onClick={() => setView('Airtel')}
+            >
+              <span aria-hidden="true" />
+              Airtel only
+            </button>
+            <button
+              type="button"
+              className={`operator-toggle__btn ${viewMode === 'compare' ? 'is-active operator-toggle__btn--compare' : ''}`}
+              aria-pressed={viewMode === 'compare'}
+              onClick={() => setView('compare')}
+            >
+              <span className="operator-toggle__compare-dots" aria-hidden="true"><i /><i /></span>
               Compare Airtel + Jio
             </button>
-            {(['Airtel', 'Jio'] as const).map((operator) => (
-              <button
-                key={operator}
-                type="button"
-                className={`operator-toggle__btn operator-toggle__btn--${operator.toLowerCase()} ${viewMode === operator ? 'is-active' : ''}`}
-                aria-pressed={viewMode === operator}
-                onClick={() => setView(operator)}
-              >
-                <span aria-hidden="true" />
-                {operator} only
-              </button>
-            ))}
           </div>
         </div>
 
-        <div className="filterbar__field">
+        <div className="filterbar__field filterbar__field--state">
           <label className="filterbar__eyebrow" htmlFor="loc-select">State</label>
           <select id="loc-select" value={selectedState ?? ''} onChange={(e) => onStateChange(e.target.value === '' ? undefined : e.target.value)}>
             <option value="">All India</option>
@@ -80,16 +115,70 @@ export function FilterBar({
           </select>
         </div>
 
-        <div className="filterbar__field">
-          <span className="filterbar__eyebrow">Years</span>
-          <div className="year-fields">
-            <select aria-label="Start year" value={yearRange[0]} onChange={(e) => onYearRangeChange([Math.min(Number(e.target.value), yearRange[1]), yearRange[1]])}>
-              {Array.from({ length: Math.max(0, yearMax - yearMin + 1) }, (_, i) => yearMin + i).map((year) => <option key={year} value={year}>{year}</option>)}
-            </select>
-            <span className="year-fields__dash">—</span>
-            <select aria-label="End year" value={yearRange[1]} onChange={(e) => onYearRangeChange([yearRange[0], Math.max(Number(e.target.value), yearRange[0])])}>
-              {Array.from({ length: Math.max(0, yearMax - yearMin + 1) }, (_, i) => yearMin + i).map((year) => <option key={year} value={year}>{year}</option>)}
-            </select>
+        <div className="filterbar__field filterbar__field--years">
+          <div className="filterbar__years-head">
+            <span className="filterbar__eyebrow">Years</span>
+            <div className="year-mode" role="group" aria-label="Choose year filtering mode">
+              <button type="button" className={yearMode === 'single' ? 'is-active' : ''} onClick={() => setYearModeSafe('single')}>Single year</button>
+              <button type="button" className={yearMode === 'period' ? 'is-active' : ''} onClick={() => setYearModeSafe('period')}>Period</button>
+            </div>
+          </div>
+
+          {yearMode === 'single' ? (
+            <div className="single-year-control">
+              <input
+                type="range"
+                min={yearMin}
+                max={yearMax}
+                step={1}
+                value={yearRange[0]}
+                aria-label="Select a single year"
+                onChange={(e) => {
+                  const year = Number(e.target.value);
+                  onYearRangeChange([year, year]);
+                }}
+              />
+              <output>{yearRange[0]}</output>
+            </div>
+          ) : (
+            <div className="range-year-control">
+              <div className="range-year-values">
+                <output>{yearRange[0]}</output>
+                <span>to</span>
+                <output>{yearRange[1]}</output>
+              </div>
+              <div className="range-year-track">
+                <div
+                  className="range-year-track__fill"
+                  style={{
+                    left: `${((yearRange[0] - yearMin) / Math.max(1, yearMax - yearMin)) * 100}%`,
+                    right: `${((yearMax - yearRange[1]) / Math.max(1, yearMax - yearMin)) * 100}%`,
+                  }}
+                />
+                <input
+                  type="range"
+                  min={yearMin}
+                  max={yearMax}
+                  step={1}
+                  value={yearRange[0]}
+                  aria-label="Start year"
+                  onChange={(e) => updateRange(Number(e.target.value), yearRange[1])}
+                />
+                <input
+                  type="range"
+                  min={yearMin}
+                  max={yearMax}
+                  step={1}
+                  value={yearRange[1]}
+                  aria-label="End year"
+                  onChange={(e) => updateRange(yearRange[0], Number(e.target.value))}
+                />
+              </div>
+            </div>
+          )}
+          <div className="year-control-hint">
+            {yearMode === 'single' ? 'Check one year at a time; switch years without creating a multi-year average.' : 'Use a period when you want the dashboard to summarize several years together.'}
+            <span className="year-control-available" aria-hidden="true">{years[0]}–{years[years.length - 1]}</span>
           </div>
         </div>
 

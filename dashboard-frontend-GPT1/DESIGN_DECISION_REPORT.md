@@ -2,15 +2,15 @@
 
 ## 1. Design concept
 
-The redesign treats the product as an **editorial comparison tool**, not a traditional KPI dashboard.
+The redesign treats the product as an **information-first voice-call experience explorer**: it supports direct Airtel/Jio comparison while also allowing a user to focus on one network without losing the geographic context.
 
-The central question is shown immediately: **how different does customer-reported call quality feel between Airtel and Jio?** The experience then follows a deliberate sequence:
+The opening question adapts to the selected network view: comparison mode asks **how customer-reported call quality differs between Airtel and Jio**, while single-network mode asks how the selected network varies across India. The experience then follows a deliberate sequence:
 
 1. **Understand the national snapshot** — a small set of exact values establishes the scale and direction of the comparison.
 2. **See where the gap occurs** — the India map is the main geographic storytelling surface.
-3. **Inspect the largest state-level differences** — a compact ranked list turns the map into a navigable set of places.
+3. **Inspect a selected state** — clicking the map reveals the exact state values without imposing an arbitrary Top-N ranking.
 4. **Understand context** — indoor, outdoor, and travelling views explain whether the picture changes by call setting.
-5. **Read limitations** — caveats are visible without competing with the primary analysis.
+5. **Read limitations and provenance** — the About view carries the required interpretation, limitations, and source context.
 
 This avoids treating every available API response as a separate dashboard “card.”
 
@@ -20,16 +20,16 @@ This avoids treating every available API response as a separate dashboard “car
 The hero establishes the task, selected geographic scope, and a small set of exact national values.
 
 ### Second: the comparison
-The first row combines the three core API metrics with a state-gap list. The metrics answer **what is different**; the state list answers **where differences are largest**.
+The first row combines the three core API metrics. They answer **what is being reported** before the user moves to the map to answer **where the pattern changes**.
 
 ### Third: the map
-The map is intentionally larger than the supporting charts. It answers the geographic question with one consistent encoding: the operator with the higher customer-reported average rating owns the state color.
+The map is intentionally larger than the supporting charts. In comparison mode it answers the geographic comparison question; in single-network mode it switches to a rating-intensity view for the selected operator.
 
 ### Fourth: context
 The indoor/outdoor/travelling breakdown is presented after the geographic story because it is an explanatory layer, not the primary question.
 
-### Fifth: caveats
-The footer makes clear what the data represents and what cannot be concluded from customer reports.
+### Fifth: caveats and provenance
+The About view makes clear what the data represents, what cannot be concluded from customer reports, and where the displayed data came from.
 
 ## 3. Visualization decisions
 
@@ -52,10 +52,10 @@ Shown as an exact percentage with a compact bar.
 ### Poor voice quality
 Shown in the same structure as call drops so the user can scan the three API metrics as one coherent comparison system.
 
-### State-gap list
-The list sorts states by the absolute difference in average rating, then exposes the underlying Airtel and Jio values.
+### Selected-state detail
+A compact state-detail panel appears beside the map and updates only after the user selects a state.
 
-**Why:** This makes the map actionable: users can jump directly from the largest visible differences into a geographic filter.
+**Why:** This preserves progressive disclosure: the map gives the overview first, and exact values appear when the user asks for them. No arbitrary Top-N list is imposed.
 
 ### Context breakdown
 Satisfactory rate is shown for Indoor, Outdoor, and Travelling using direct horizontal bars.
@@ -69,12 +69,13 @@ Satisfactory rate is shown for Indoor, Outdoor, and Travelling using direct hori
 The map remains mandatory and becomes the visual centerpiece.
 
 ### Encoding
-- **Airtel color:** Airtel has the higher average rating.
-- **Jio color:** Jio has the higher average rating.
-- **Neutral:** the ratings are within the existing 0.05 rating-point comparison threshold.
+- **Comparison mode — Airtel color:** Airtel has the higher average rating.
+- **Comparison mode — Jio color:** Jio has the higher average rating.
+- **Comparison mode — Neutral:** the ratings are within the existing 0.05 rating-point comparison threshold.
+- **Single-network mode:** the selected operator keeps its identity color and darker opacity represents a higher average rating.
 - **Hatching:** the API marks the state as low-confidence / limited feedback.
 
-The map deliberately does **not** encode a homemade composite “quality score.” It uses a real API metric (`avg_rating`) and keeps supporting metrics in the tooltip.
+The map deliberately does **not** encode a homemade composite “quality score.” It uses the real API metric (`avg_rating`) and keeps supporting measures in the state detail / tooltip.
 
 ### Interaction
 - Hover reveals state-level values.
@@ -109,7 +110,7 @@ Operator colors are **identity colors**, not positive/negative colors.
 - Neutral: graphite/gray.
 - Caution: amber, used for limited-feedback notes.
 
-The same operator colors repeat across map, values, and bars so users learn the visual grammar once.
+The same operator colors repeat across map, values, controls, and bars so users learn the visual grammar once. Magnitude is handled separately through position, bar length, exact values, or map intensity.
 
 The redesign avoids relying on red/green to express “good/bad.” The interface also provides explicit labels such as “Airtel higher,” “Jio higher,” and “Similar,” so meaning survives without color.
 

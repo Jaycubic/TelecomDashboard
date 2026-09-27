@@ -7,7 +7,6 @@ import { MetricPanel } from './components/MetricPanel/MetricPanel';
 import { RadarProfile } from './components/RadarProfile/RadarProfile';
 import { PerformanceProfile } from './components/PerformanceProfile/PerformanceProfile';
 import { AboutView } from './components/AboutView/AboutView';
-import { StateDetailPanel } from './components/StateDetailPanel/StateDetailPanel';
 import { useDashboardState } from './hooks/useDashboardState';
 import { useTheme } from './hooks/useTheme';
 import './App.css';
@@ -108,29 +107,21 @@ export default function App() {
                   theme={theme}
                 />
 
-                <aside className="insight-rail" aria-label="Selected state detail">
-                  <StateDetailPanel
-                    stateRows={data.stateQuality?.states ?? []}
-                    confidenceRows={data.confidence?.confidence ?? []}
-                    selectedState={selectedState}
-                    carrierVisibility={carrierVisibility}
-                    onClear={() => setSelectedState(undefined)}
-                  />
-
+                <aside className="insight-rail" aria-label="Supporting performance views">
                   <RadarProfile
                     radarAirtel={data.radarAirtel}
                     radarJio={data.radarJio}
                     carrierVisibility={carrierVisibility}
                     theme={theme}
                   />
+                  <PerformanceProfile
+                    indoorOutdoor={data.indoorOutdoor}
+                    carrierVisibility={carrierVisibility}
+                  />
                 </aside>
               </div>
             </section>
 
-            <PerformanceProfile
-              indoorOutdoor={data.indoorOutdoor}
-              carrierVisibility={carrierVisibility}
-            />
           </main>
         </>
       )}

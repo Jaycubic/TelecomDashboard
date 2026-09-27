@@ -1,15 +1,15 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { TopBar } from './components/TopBar/TopBar';
 import { HeroStrip } from './components/HeroStrip/HeroStrip';
 import { FilterBar } from './components/FilterBar/FilterBar';
 import { IndiaMap } from './components/Map/IndiaMap';
 import { MetricPanel } from './components/MetricPanel/MetricPanel';
-import { PerformanceProfile } from './components/PerformanceProfile/PerformanceProfile';
 import { RadarProfile } from './components/RadarProfile/RadarProfile';
+import { PerformanceProfile } from './components/PerformanceProfile/PerformanceProfile';
 import { AboutView } from './components/AboutView/AboutView';
+import { StateDetailPanel } from './components/StateDetailPanel/StateDetailPanel';
 import { useDashboardState } from './hooks/useDashboardState';
 import { useTheme } from './hooks/useTheme';
-import { buildStateGaps } from './lib/analysis';
 import './App.css';
 
 type DashboardView = 'overview' | 'about';
@@ -29,8 +29,8 @@ export default function App() {
   } = useDashboardState();
   const { theme, toggleTheme } = useTheme();
 
-  const stateGaps = useMemo(() => buildStateGaps(data.stateQuality?.states ?? []), [data.stateQuality]);
-  const visibleStateGaps = useMemo(() => stateGaps.slice(0, 7), [stateGaps]);
+  const bothVisible = carrierVisibility.Airtel && carrierVisibility.Jio;
+  const selectedOperator = carrierVisibility.Airtel ? 'Airtel' : 'Jio';
 
   const handleViewChange = (view: DashboardView) => {
     setActiveView(view);
@@ -52,7 +52,13 @@ export default function App() {
         <AboutView />
       ) : (
         <>
-          <HeroStrip kpis={data.kpis} selectedState={selectedState} loading={loading} />
+          <HeroStrip
+            kpis={data.kpis}
+            selectedState={selectedState}
+            loading={loading}
+            carrierVisibility={carrierVisibility}
+          />
+
           <FilterBar
             selectedState={selectedState}
             onStateChange={setSelectedState}
@@ -64,24 +70,32 @@ export default function App() {
           />
 
           <main className="app__main">
-            <section className="at-a-glance" aria-label="National snapshot">
+            <section className="at-a-glance" aria-label="National voice-call quality snapshot">
               <div className="section-heading">
                 <div>
                   <div className="section-kicker">At a glance</div>
-                  <h2>Three signals worth seeing together.</h2>
+                  <h2>{bothVisible ? 'Three measures of voice-call experience.' : `Voice-call experience on ${selectedOperator}.`}</h2>
                 </div>
-                <p>Exact values for the current filters. The map below moves from <strong>what</strong> differs to <strong>where</strong> it differs.</p>
+                <p>
+                  {bothVisible
+                    ? 'These measures describe what customers reported. Compare the values first; use the map below to see where the pattern changes.'
+                    : `These measures describe what ${selectedOperator} customers reported in the current filters. Use the map below to see how ratings vary by state.`}
+                </p>
               </div>
               <MetricPanel kpis={data.kpis} carrierVisibility={carrierVisibility} />
             </section>
 
-            <section className="geography-section" aria-label="Geographic comparison">
+            <section className="geography-section" aria-label="Geographic view">
               <div className="section-heading section-heading--tight">
                 <div>
-                  <div className="section-kicker">Where it changes</div>
-                  <h2>Which states show the clearest difference?</h2>
+                  <div className="section-kicker">Geography</div>
+                  <h2>{bothVisible ? 'Where do customer ratings differ?' : `Where is the reported rating higher or lower for ${selectedOperator}?`}</h2>
                 </div>
-                <p>Click a state on the map or in the ranking to focus every section.</p>
+                <p>
+                  {bothVisible
+                    ? 'The map answers the comparison question state by state. Select a state to bring its values into focus.'
+                    : `The map switches from comparison to a rating range for ${selectedOperator}. Darker states represent higher reported average ratings.`}
+                </p>
               </div>
 
               <div className="geography-grid">
@@ -94,33 +108,14 @@ export default function App() {
                   theme={theme}
                 />
 
-                <aside className="insight-rail" aria-label="State and performance insights">
-                  <section className="gap-panel">
-                    <div className="gap-panel__header">
-                      <div>
-                        <div className="section-kicker">Top 7</div>
-                        <h3>Largest rating gaps</h3>
-                        <p>States ordered by the absolute difference in reported average rating.</p>
-                      </div>
-                      <span>{stateGaps.length} comparable</span>
-                    </div>
-
-                    <div className="gap-list">
-                      {visibleStateGaps.map((row, index) => (
-                        <button
-                          key={row.stateName}
-                          className={`gap-row ${selectedState === row.stateName ? 'is-selected' : ''}`}
-                          onClick={() => setSelectedState(selectedState === row.stateName ? undefined : row.stateName)}
-                        >
-                          <span className="gap-row__rank">{String(index + 1).padStart(2, '0')}</span>
-                          <span className="gap-row__state"><strong>{row.stateName}</strong><small>{row.region ?? 'Region unavailable'} · {row.reports.toLocaleString('en-IN')} reports</small></span>
-                          <span className="gap-row__values"><b className="airtel">{row.airtel?.toFixed(2) ?? '—'}</b><span>vs</span><b className="jio">{row.jio?.toFixed(2) ?? '—'}</b></span>
-                          <span className={`gap-row__badge ${row.leader === 'Airtel' ? 'airtel-bg' : row.leader === 'Jio' ? 'jio-bg' : ''}`}>{row.leader === 'Airtel' ? `Airtel +${row.gap?.toFixed(2)}` : row.leader === 'Jio' ? `Jio +${row.gap?.toFixed(2)}` : 'Similar'}</span>
-                        </button>
-                      ))}
-                      {!visibleStateGaps.length && <div className="gap-empty">No comparable state ratings for the current filters.</div>}
-                    </div>
-                  </section>
+                <aside className="insight-rail" aria-label="Selected state detail">
+                  <StateDetailPanel
+                    stateRows={data.stateQuality?.states ?? []}
+                    confidenceRows={data.confidence?.confidence ?? []}
+                    selectedState={selectedState}
+                    carrierVisibility={carrierVisibility}
+                    onClear={() => setSelectedState(undefined)}
+                  />
 
                   <RadarProfile
                     radarAirtel={data.radarAirtel}

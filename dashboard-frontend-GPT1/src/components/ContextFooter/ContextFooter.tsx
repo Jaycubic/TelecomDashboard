@@ -10,7 +10,7 @@ export function ContextFooter() {
       <div className="ctx-footer__grid">
         <div className="ctx-footer__cell">
           <p className="ctx-footer__heading">What is shown</p>
-          <p className="ctx-footer__body">Customer-reported voice-call quality across Airtel and Jio, using ratings, call-drop classifications, poor-voice classifications, call setting, state, and date filters available from the dashboard API.</p>
+          <p className="ctx-footer__body">Customer-reported voice-call quality across Airtel and Jio, using average rating, dropped-call report share, poor voice-quality report share, call setting, state, and year filters available from the dashboard API.</p>
         </div>
         <div className="ctx-footer__cell">
           <p className="ctx-footer__heading">How to read the map</p>
