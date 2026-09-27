@@ -24,7 +24,7 @@ export function TopBar({ loading, error, theme, onToggleTheme, activeView, onVie
           </div>
           <div>
             <div className="topbar__wordmark">Call Quality</div>
-            <div className="topbar__sub">Customer-reported voice-call experience · Airtel + Jio</div>
+            <div className="topbar__sub">Airtel vs Jio · customer-reported voice experience</div>
           </div>
         </div>
 
