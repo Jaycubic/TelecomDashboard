@@ -9,6 +9,7 @@ import type {
   KpiResponse,
   Operator,
   RadarResponse,
+  Region,
   StateQualityResponse,
 } from '../types';
 
@@ -37,11 +38,8 @@ const EMPTY_DATA: DashboardData = {
   filterOptions: null,
 };
 
-// NOTE: the Region filter was removed from the UI (it fragmented the
-// comparison without adding much the state filter + map click didn't
-// already cover). GlobalFilters.region is left in the shared type because
-// the backend API still accepts it -- we simply never set it from here.
 export function useDashboardState() {
+  const [region, setRegion] = useState<Region | undefined>(undefined);
   const [selectedState, setSelectedState] = useState<string | undefined>(undefined);
   const [yearRange, setYearRange] = useState<[number, number]>([2021, 2025]);
   const [carrierVisibility, setCarrierVisibility] = useState<CarrierVisibility>({
@@ -56,13 +54,14 @@ export function useDashboardState() {
   const requestIdRef = useRef(0);
 
   const filters: GlobalFilters = {
+    region,
     state: selectedState,
     year_start: yearRange[0],
     year_end: yearRange[1],
   };
 
-  // Fetch filter options once -- feeds the location dropdown and sets the
-  // year range's real min/max instead of hardcoding 2021-2025.
+  // Fetch filter options once -- feeds the sidebar's state dropdown and
+  // sets the year slider's real min/max instead of hardcoding 2021-2025.
   useEffect(() => {
     api
       .getFilterOptions()
@@ -83,7 +82,7 @@ export function useDashboardState() {
     Promise.all([
       api.getKpis(filters),
       api.getStateQuality(filters),
-      api.getStateConfidence({}),
+      api.getStateConfidence({ region: filters.region }),
       api.getRadar('Airtel' as Operator, filters),
       api.getRadar('Jio' as Operator, filters),
       api.getIndoorOutdoor(filters),
@@ -113,13 +112,15 @@ export function useDashboardState() {
         setLoading(false);
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedState, yearRange[0], yearRange[1]]);
+  }, [region, selectedState, yearRange[0], yearRange[1]]);
 
   useEffect(() => {
     refetch();
   }, [refetch]);
 
   return {
+    region,
+    setRegion,
     selectedState,
     setSelectedState,
     yearRange,

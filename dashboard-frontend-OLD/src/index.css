@@ -1,32 +1,19 @@
 /* src/index.css */
 
 :root {
-  /* Color -- light theme (default) */
+  /* Color */
   --color-bg: #f7f7f5;
   --color-panel: #ffffff;
   --color-panel-recessed: #f1f1ee;
   --color-ink: #1b1d22;
   --color-ink-soft: #5a5e68;
   --color-border: #dcdcd6;
-
-  /* Operator identity colors -- who this is. Never reused as a semantic
-     "good/bad" signal (see below). Vermillion/blue stays distinguishable
-     across protanopia, deuteranopia and tritanopia. */
   --color-airtel: #d6472b;
   --color-airtel-soft: #f3d6cf;
   --color-jio: #1b6fc9;
   --color-jio-soft: #cfe1f3;
-
-  /* Semantic colors -- what an outcome means, independent of who owns it. */
-  --color-good: #1e8a4c;
-  --color-good-soft: #dceee1;
-  --color-warn: #b9791f;
-  --color-warn-soft: #f2e2c4;
-  --color-bad: #b23b3b;
-  --color-bad-soft: #f3d9d9;
-  --color-neutral: #6b7280;
-  --color-neutral-soft: #e4e4e4;
-
+  --color-amber: #b9791f;
+  --color-amber-soft: #f2e2c4;
   --color-focus: #1b6fc9;
 
   /* Type */
@@ -38,37 +25,9 @@
   --step-4: 1.75rem;
 
   /* Layout */
+  --sidebar-width: 260px;
   --radius-sm: 4px;
   --radius-md: 8px;
-
-  color-scheme: light;
-}
-
-[data-theme='dark'] {
-  --color-bg: #12141a;
-  --color-panel: #1a1d26;
-  --color-panel-recessed: #20232e;
-  --color-ink: #eceef2;
-  --color-ink-soft: #9aa1b0;
-  --color-border: #2c303c;
-
-  --color-airtel: #ff7a5c;
-  --color-airtel-soft: #402420;
-  --color-jio: #5aa2ff;
-  --color-jio-soft: #1c2c40;
-
-  --color-good: #4cbf7f;
-  --color-good-soft: #163326;
-  --color-warn: #d9a441;
-  --color-warn-soft: #382c14;
-  --color-bad: #e07070;
-  --color-bad-soft: #3a1f1f;
-  --color-neutral: #9aa1b0;
-  --color-neutral-soft: #2a2e3a;
-
-  --color-focus: #5aa2ff;
-
-  color-scheme: dark;
 }
 
 * {
@@ -89,7 +48,6 @@ body {
   font-size: var(--step-0);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 h1,

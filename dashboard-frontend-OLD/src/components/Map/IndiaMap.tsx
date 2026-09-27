@@ -4,10 +4,8 @@ import { INDIA_STATE_FEATURES, buildProjection } from '../../lib/geo';
 import { buildStateFillMap, type StateFillResult } from '../../lib/mapColor';
 import { toGeoJsonStateName } from '../../lib/stateNameMap';
 import { formatPct } from '../../lib/format';
-import { CHART_THEME } from '../../lib/constants';
 import type { ConfidenceRow, StateQualityRow } from '../../types';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
-import type { ThemeMode } from '../../hooks/useTheme';
 import './IndiaMap.css';
 
 interface IndiaMapProps {
@@ -16,7 +14,6 @@ interface IndiaMapProps {
   carrierVisibility: CarrierVisibility;
   selectedState: string | undefined;
   onSelectState: (state: string | undefined) => void;
-  theme: ThemeMode;
 }
 
 interface TooltipState {
@@ -33,9 +30,7 @@ export function IndiaMap({
   carrierVisibility,
   selectedState,
   onSelectState,
-  theme,
 }: IndiaMapProps) {
-  const colors = CHART_THEME[theme];
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 640, height: 640 });
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
@@ -65,8 +60,8 @@ export function IndiaMap({
   const { path } = useMemo(() => buildProjection(size.width, size.height), [size.width, size.height]);
 
   const fillMap = useMemo(
-    () => buildStateFillMap(stateRows, confidenceRows, carrierVisibility, colors.noData),
-    [stateRows, confidenceRows, carrierVisibility, colors.noData],
+    () => buildStateFillMap(stateRows, confidenceRows, carrierVisibility),
+    [stateRows, confidenceRows, carrierVisibility],
   );
 
   const rowsByGeoName = useMemo(() => {
@@ -88,7 +83,7 @@ export function IndiaMap({
         width={size.width}
         height={size.height}
         role="img"
-        aria-label="Map of India shaded by which network -- Airtel or Jio -- customers report better call quality with in each state. States with too few reports to be confident are marked with a diagonal hatch pattern."
+        aria-label="Map of India shaded by which operator -- Airtel or Jio -- has the better call quality score in each state. States with too few reports to be confident are marked with a diagonal hatch pattern."
       >
         <defs>
           <pattern
@@ -98,7 +93,7 @@ export function IndiaMap({
             patternTransform="rotate(45)"
             patternUnits="userSpaceOnUse"
           >
-            <line x1="0" y1="0" x2="0" y2="6" stroke={colors.hatch} strokeWidth="1.5" />
+            <line x1="0" y1="0" x2="0" y2="6" stroke="#8b8b85" strokeWidth="1.5" />
           </pattern>
         </defs>
 
@@ -112,19 +107,17 @@ export function IndiaMap({
             <path
               key={name}
               d={d}
-              fill={info ? info.fill : colors.noData}
+              fill={info ? info.fill : '#E4E4DF'}
               fillOpacity={info ? info.opacity : 1}
-              stroke={isSelected ? 'var(--color-ink)' : colors.mapStroke}
+              stroke={isSelected ? 'var(--color-ink)' : '#ffffff'}
               strokeWidth={isSelected ? 2 : 0.75}
               className={`india-map__state ${hasAnimated ? 'india-map__state--drawn' : ''}`}
               tabIndex={0}
               role="button"
               aria-label={`${name}: ${
                 info?.hasData
-                  ? info.leadingOperator === 'tie'
-                    ? 'Airtel and Jio report similar quality'
-                    : `${info.leadingOperator} reports better quality here`
-                  : 'no reports for current filters'
+                  ? `leading operator ${info.leadingOperator}`
+                  : 'no data for current filters'
               }`}
               onClick={() =>
                 onSelectState(selectedGeoName === name ? undefined : name)
@@ -183,9 +176,7 @@ export function IndiaMap({
             </p>
           ))}
           {tooltip.fillInfo?.lowConfidence && (
-            <p className="india-map__tooltip-caveat">
-              Limited feedback here — treat as directional, not conclusive
-            </p>
+            <p className="india-map__tooltip-caveat">Low sample size — read with caution</p>
           )}
           <p className="india-map__tooltip-hint">Click to filter the dashboard to this state</p>
         </div>

@@ -83,7 +83,7 @@
 
 .india-map__tooltip-caveat {
   margin-top: 6px;
-  color: var(--color-warn);
+  color: var(--color-amber-soft);
   font-size: 0.75rem;
 }
 

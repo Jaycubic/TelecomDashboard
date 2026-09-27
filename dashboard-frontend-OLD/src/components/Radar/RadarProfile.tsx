@@ -10,16 +10,14 @@ import {
   Tooltip,
 } from 'recharts';
 import type { RadarResponse } from '../../types';
-import { CHART_THEME, OPERATOR_COLOR } from '../../lib/constants';
+import { OPERATOR_COLOR } from '../../lib/constants';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
-import type { ThemeMode } from '../../hooks/useTheme';
 import './RadarProfile.css';
 
 interface RadarProfileProps {
   radarAirtel: RadarResponse | null;
   radarJio: RadarResponse | null;
   carrierVisibility: CarrierVisibility;
-  theme: ThemeMode;
 }
 
 const AXIS_LABELS: Record<string, string> = {
@@ -39,8 +37,7 @@ function normalizeAxisValue(key: string, value: number | null): number {
   return key === 'rating' ? (value / 5) * 100 : value;
 }
 
-export function RadarProfile({ radarAirtel, radarJio, carrierVisibility, theme }: RadarProfileProps) {
-  const colors = CHART_THEME[theme];
+export function RadarProfile({ radarAirtel, radarJio, carrierVisibility }: RadarProfileProps) {
   if (!radarAirtel && !radarJio) {
     return <p className="radar-profile__empty">No data for the current filters.</p>;
   }
@@ -62,9 +59,9 @@ export function RadarProfile({ radarAirtel, radarJio, carrierVisibility, theme }
     <div className="radar-profile">
       <ResponsiveContainer width="100%" height={340}>
         <RadarChart data={chartData} outerRadius="72%">
-          <PolarGrid stroke={colors.grid} />
-          <PolarAngleAxis dataKey="axis" tick={{ fontSize: 12, fill: colors.axis }} />
-          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 10, fill: colors.axis }} />
+          <PolarGrid stroke="#DCDCD6" />
+          <PolarAngleAxis dataKey="axis" tick={{ fontSize: 12, fill: '#5A5E68' }} />
+          <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 10, fill: '#9aa0a6' }} />
           {carrierVisibility.Airtel && (
             <Radar
               name="Airtel"

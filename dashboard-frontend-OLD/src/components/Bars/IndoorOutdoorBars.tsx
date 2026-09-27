@@ -10,20 +10,17 @@ import {
   YAxis,
 } from 'recharts';
 import type { IndoorOutdoorResponse, InOut } from '../../types';
-import { CHART_THEME, OPERATOR_COLOR } from '../../lib/constants';
+import { OPERATOR_COLOR } from '../../lib/constants';
 import { toNumber } from '../../lib/format';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
-import type { ThemeMode } from '../../hooks/useTheme';
 import './IndoorOutdoorBars.css';
 
 interface IndoorOutdoorBarsProps {
   data: IndoorOutdoorResponse | null;
   carrierVisibility: CarrierVisibility;
-  theme: ThemeMode;
 }
 
-export function IndoorOutdoorBars({ data, carrierVisibility, theme }: IndoorOutdoorBarsProps) {
-  const colors = CHART_THEME[theme];
+export function IndoorOutdoorBars({ data, carrierVisibility }: IndoorOutdoorBarsProps) {
   const rows = data?.breakdown ?? [];
   if (rows.length === 0) {
     return <p className="io-bars__empty">No data for the current filters.</p>;
@@ -52,10 +49,10 @@ export function IndoorOutdoorBars({ data, carrierVisibility, theme }: IndoorOutd
     <div className="io-bars">
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={chartData} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} vertical={false} />
-          <XAxis dataKey="inout" tick={{ fontSize: 12, fill: colors.axis }} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#E4E4DF" vertical={false} />
+          <XAxis dataKey="inout" tick={{ fontSize: 12, fill: '#5A5E68' }} />
           <YAxis
-            tick={{ fontSize: 12, fill: colors.axis }}
+            tick={{ fontSize: 12, fill: '#5A5E68' }}
             domain={[0, 100]}
             tickFormatter={(v) => `${v}%`}
             width={40}

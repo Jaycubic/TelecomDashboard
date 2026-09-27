@@ -1,0 +1,104 @@
+/* src/components/Overview/ComparisonOverview.css */
+
+.comparison-overview {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px 22px 16px;
+}
+
+.comparison-overview--empty {
+  color: var(--color-ink-soft);
+  font-size: var(--step-1);
+  padding: 18px 20px;
+}
+
+.comparison-overview__table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparison-overview__table th,
+.comparison-overview__table td {
+  text-align: right;
+  padding: 11px 10px;
+  font-size: var(--step-3);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.comparison-overview__table thead th {
+  font-size: var(--step-1);
+  color: var(--color-ink-soft);
+  font-weight: 600;
+  padding-bottom: 8px;
+}
+
+.comparison-overview__row-label {
+  text-align: left !important;
+  font-weight: 500 !important;
+  font-size: var(--step-1) !important;
+  color: var(--color-ink-soft);
+  white-space: normal !important;
+}
+
+.comparison-overview__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.comparison-overview__cell--ahead {
+  color: var(--color-ink);
+}
+
+.comparison-overview__badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.comparison-overview__badge--good {
+  background: var(--color-good-soft);
+  color: var(--color-good);
+}
+
+.comparison-overview__meta-row td,
+.comparison-overview__meta-row th {
+  border-bottom: none;
+  font-weight: 400;
+}
+
+.comparison-overview__meta-cell {
+  text-align: left !important;
+  font-size: var(--step-1) !important;
+  color: var(--color-ink-soft);
+  font-weight: 400 !important;
+}
+
+.comparison-overview__volume {
+  margin-top: 14px;
+  font-size: var(--step-1);
+  color: var(--color-ink-soft);
+}
+
+.comparison-overview__hint {
+  cursor: help;
+  border-bottom: 1px dotted var(--color-ink-soft);
+}
+
+@media (max-width: 560px) {
+  .comparison-overview__table th,
+  .comparison-overview__table td {
+    font-size: var(--step-2);
+    padding: 9px 6px;
+  }
+}

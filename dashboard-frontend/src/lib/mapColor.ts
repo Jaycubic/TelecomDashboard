@@ -12,8 +12,6 @@ export interface StateFillResult {
   leadingOperator: 'Airtel' | 'Jio' | 'tie' | null;
 }
 
-const NO_DATA_FILL = '#E4E4DF';
-
 /** A simple composite quality score: fewer call drops + less poor voice = higher score, 0-100. */
 function qualityScore(row: StateQualityRow): number | null {
   const drop = toNumber(row.call_drop_pct);
@@ -27,11 +25,14 @@ function qualityScore(row: StateQualityRow): number | null {
 /**
  * Builds a lookup from GeoJSON ST_NM -> fill result, given the current
  * state-quality rows, confidence rows, and which carriers are toggled on.
+ * `noDataFill` is theme-dependent (light vs dark background), so the
+ * caller supplies it rather than this module hardcoding one value.
  */
 export function buildStateFillMap(
   stateRows: StateQualityRow[],
   confidenceRows: ConfidenceRow[],
   visibleCarriers: { Airtel: boolean; Jio: boolean },
+  noDataFill: string,
 ): Map<string, StateFillResult> {
   const byGeoName = new Map<string, StateQualityRow[]>();
   for (const row of stateRows) {
@@ -60,7 +61,7 @@ export function buildStateFillMap(
 
     if (airtelScore === null && jioScore === null) {
       result.set(geoName, {
-        fill: NO_DATA_FILL,
+        fill: noDataFill,
         opacity: 1,
         hasData: false,
         lowConfidence,

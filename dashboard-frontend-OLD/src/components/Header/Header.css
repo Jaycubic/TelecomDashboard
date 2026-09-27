@@ -11,7 +11,6 @@
 
 .header__title {
   font-size: var(--step-4);
-  color: var(--color-ink);
 }
 
 .header__subtitle {
@@ -20,19 +19,13 @@
   font-size: var(--step-1);
 }
 
-.header__right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
 .header__status {
   font-size: var(--step-1);
   white-space: nowrap;
 }
 
 .header__status--ok {
-  color: var(--color-good);
+  color: #3a7d3f;
 }
 
 .header__status--loading {
@@ -40,24 +33,6 @@
 }
 
 .header__status--error {
-  color: var(--color-bad);
+  color: var(--color-airtel);
   font-weight: 500;
-}
-
-.header__theme-toggle {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  background: var(--color-panel-recessed);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.95rem;
-  flex-shrink: 0;
-  align-self: center;
-}
-
-.header__theme-toggle:hover {
-  border-color: var(--color-ink-soft);
 }
