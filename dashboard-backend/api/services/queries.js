@@ -7,7 +7,7 @@ const pool = require('../config/db');
 
 const VALID_OPERATORS = new Set(['Airtel', 'Jio']);
 const VALID_REGIONS = new Set(['North', 'West', 'East', 'South']);
-const VALID_INOUT = new Set(['Indoor', 'Outdoor']);
+const VALID_INOUT = new Set(['Indoor', 'Outdoor', 'Travelling']);
 
 /**
  * Builds a parameterized WHERE clause from the dashboard's global filters.

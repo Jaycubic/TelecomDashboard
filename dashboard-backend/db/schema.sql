@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS call_quality_reports (
     id                  BIGSERIAL PRIMARY KEY,
 
     operator            VARCHAR(10)  NOT NULL,      -- 'Airtel' | 'Jio' (normalized on ingest)
-    inout               VARCHAR(10)  NOT NULL,      -- 'Indoor' | 'Outdoor'
+    inout               VARCHAR(15)  NOT NULL,      -- 'Indoor' | 'Outdoor' | 'Travelling'
     network_type        VARCHAR(10),                -- '2G' | '3G' | '4G' | '5G' etc.
     rating              SMALLINT     NOT NULL,       -- 1-5
     calldrop_category   VARCHAR(30)  NOT NULL,       -- 'Call Dropped' | 'Poor Voice Quality' | 'Satisfactory'
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS call_quality_reports (
     loaded_at           TIMESTAMP    NOT NULL DEFAULT now(),
 
     CONSTRAINT chk_operator  CHECK (operator IN ('Airtel', 'Jio')),
-    CONSTRAINT chk_inout     CHECK (inout IN ('Indoor', 'Outdoor')),
+    CONSTRAINT chk_inout     CHECK (inout IN ('Indoor', 'Outdoor', 'Travelling')),
     CONSTRAINT chk_rating    CHECK (rating BETWEEN 1 AND 5),
     CONSTRAINT chk_year      CHECK (year BETWEEN 2000 AND 2100),
     CONSTRAINT chk_month     CHECK (month IS NULL OR month BETWEEN 1 AND 12),

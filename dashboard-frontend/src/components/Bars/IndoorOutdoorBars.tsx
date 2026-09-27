@@ -29,7 +29,11 @@ export function IndoorOutdoorBars({ data, carrierVisibility }: IndoorOutdoorBars
   // Reshape into one row per inout bucket, with each operator's satisfactory %
   // as a separate series -- satisfactory rate is the headline "quality" number;
   // call-drop / poor-voice are available in the tooltip below.
-  const chartData = ['Indoor', 'Outdoor'].map((inout) => {
+  const inoutCategories: InOut[] = rows.some((r) => r.inout === 'Travelling')
+    ? ['Indoor', 'Outdoor', 'Travelling']
+    : ['Indoor', 'Outdoor'];
+
+  const chartData = inoutCategories.map((inout) => {
     const airtelRow = rows.find((r) => r.inout === inout && r.operator === 'Airtel');
     const jioRow = rows.find((r) => r.inout === inout && r.operator === 'Jio');
     return {

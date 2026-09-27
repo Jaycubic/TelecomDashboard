@@ -69,7 +69,7 @@ REQUIRED_COLUMNS = [
     "state_name", "month", "year",
 ]
 
-VALID_INOUT = {"indoor", "outdoor"}
+VALID_INOUT = {"indoor", "outdoor", "travelling", "traveling"}
 VALID_CALLDROP_CATEGORY = {"call dropped", "poor voice quality", "satisfactory"}
 
 # Canonical state names, matching the ST_NM property values in the DataMeet
@@ -150,7 +150,13 @@ def normalize_operator(value: str) -> str:
 
 def normalize_inout(value: str) -> str:
     v = str(value).strip().lower()
-    return "Indoor" if v == "indoor" else "Outdoor" if v == "outdoor" else str(value).strip()
+    if v == "indoor":
+        return "Indoor"
+    if v == "outdoor":
+        return "Outdoor"
+    if v in ("travelling", "traveling"):
+        return "Travelling"
+    return str(value).strip()
 
 
 def validate_and_clean(df: pd.DataFrame, source_label: str, region_lookup: dict):
@@ -179,7 +185,7 @@ def validate_and_clean(df: pd.DataFrame, source_label: str, region_lookup: dict)
         reasons.loc[mask & (reasons == "")] = reason
 
     flag(~df["operator"].isin(["Airtel", "Jio"]), "invalid_operator")
-    flag(~df["inout"].isin(["Indoor", "Outdoor"]), "invalid_inout")
+    flag(~df["inout"].isin(["Indoor", "Outdoor", "Travelling"]), "invalid_inout")
     flag(~df["calldrop_category"].str.lower().isin(VALID_CALLDROP_CATEGORY), "invalid_calldrop_category")
 
     rating_numeric = pd.to_numeric(df["rating"], errors="coerce")

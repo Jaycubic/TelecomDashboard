@@ -6,7 +6,7 @@
 
 export type Operator = 'Airtel' | 'Jio';
 export type Region = 'North' | 'West' | 'East' | 'South';
-export type InOut = 'Indoor' | 'Outdoor';
+export type InOut = 'Indoor' | 'Outdoor' | 'Travelling';
 export type Confidence = 'low' | 'medium' | 'high';
 
 export interface GlobalFilters {
