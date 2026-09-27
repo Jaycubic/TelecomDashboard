@@ -71,6 +71,16 @@ npm start               # listens on :8094 by default
 
 Check it's alive: `curl http://localhost:8094/health`
 
+### 4. Frontend Server (Port 8099)
+
+To serve the built frontend (`dist`) in a production/server environment:
+
+```bash
+cd api
+npm run serve:frontend
+```
+This runs `frontend-server.js` on port `8099`, serves SPA files from `dashboard-frontend/dist`, and routes API calls to `http://192.168.8.10:8094`. Accessible over LAN at `http://192.168.8.10:8099`.
+
 ### Endpoints
 
 | Endpoint | Powers |

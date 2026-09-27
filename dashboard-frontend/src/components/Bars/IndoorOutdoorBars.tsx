@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import type { IndoorOutdoorResponse } from '../../types';
+import type { IndoorOutdoorResponse, InOut } from '../../types';
 import { OPERATOR_COLOR } from '../../lib/constants';
 import { toNumber } from '../../lib/format';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
