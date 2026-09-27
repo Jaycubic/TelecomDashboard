@@ -79,15 +79,15 @@ export function HeroStrip({ kpis, selectedState, loading }: HeroStripProps) {
             />
             <HeroStat
               label="Call drops"
-              airtelVal={toNumber(airtel.call_drop_pct)?.toFixed(1) + '%' ?? '—'}
-              jioVal={toNumber(jio.call_drop_pct)?.toFixed(1) + '%' ?? '—'}
+              airtelVal={toNumber(airtel.call_drop_pct) !== null ? `${toNumber(airtel.call_drop_pct)!.toFixed(1)}%` : '—'}
+              jioVal={toNumber(jio.call_drop_pct) !== null ? `${toNumber(jio.call_drop_pct)!.toFixed(1)}%` : '—'}
               winner={dropWin.winner}
               lowerBetter
             />
             <HeroStat
               label="Poor voice"
-              airtelVal={toNumber(airtel.poor_voice_pct)?.toFixed(1) + '%' ?? '—'}
-              jioVal={toNumber(jio.poor_voice_pct)?.toFixed(1) + '%' ?? '—'}
+              airtelVal={toNumber(airtel.poor_voice_pct) !== null ? `${toNumber(airtel.poor_voice_pct)!.toFixed(1)}%` : '—'}
+              jioVal={toNumber(jio.poor_voice_pct) !== null ? `${toNumber(jio.poor_voice_pct)!.toFixed(1)}%` : '—'}
               winner={voiceWin.winner}
               lowerBetter
             />

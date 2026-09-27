@@ -13,7 +13,6 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Cell,
   Legend,
 } from 'recharts';
 import type { RadarResponse, IndoorOutdoorResponse, InOut } from '../../types';
