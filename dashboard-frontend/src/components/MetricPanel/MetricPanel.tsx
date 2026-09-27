@@ -1,4 +1,4 @@
-import type { KpiResponse, IndoorOutdoorResponse } from '../../types';
+import type { KpiResponse } from '../../types';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
 import { buildMetricSummaries } from '../../lib/analysis';
 import './MetricPanel.css';
