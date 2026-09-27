@@ -1,34 +1,6 @@
-/* ContextFooter.css */
-.ctx-footer {
-  border-top: 1px solid var(--color-border);
-  padding-top: var(--space-6);
-  margin-top: var(--space-2);
-}
-
-.ctx-footer__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-6);
-}
-
-.ctx-footer__heading {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  color: var(--color-ink-secondary);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: var(--space-3);
-}
-
-.ctx-footer__body {
-  font-size: var(--text-sm);
-  color: var(--color-ink-tertiary);
-  line-height: 1.65;
-}
-
-@media (max-width: 900px) {
-  .ctx-footer__grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-4);
-  }
-}
+.ctx-footer { padding: 30px 2px 24px; border-top: 1px solid var(--color-border); }
+.ctx-footer__intro h2 { margin: 5px 0 24px; font-size: 18px; letter-spacing: -.025em; }
+.ctx-footer__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.ctx-footer__heading { font-size: 9px; text-transform: uppercase; letter-spacing: .09em; font-weight: 800; color: var(--color-ink-tertiary); margin-bottom: 8px; }
+.ctx-footer__body { font-size: 10px; line-height: 1.7; color: var(--color-ink-secondary); }
+@media (max-width: 860px) { .ctx-footer__grid { grid-template-columns: 1fr; gap: 20px; } }

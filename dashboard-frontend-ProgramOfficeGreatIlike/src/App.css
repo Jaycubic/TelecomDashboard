@@ -1,0 +1,56 @@
+/* src/App.css */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--color-bg);
+}
+
+.app__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: 0 var(--space-6) var(--space-10);
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Map + Metrics side-by-side */
+.app__body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.app__map-col {
+  /* Map column — takes all remaining space */
+}
+
+.app__metrics-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  position: sticky;
+  top: var(--space-4);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1140px) {
+  .app__body {
+    grid-template-columns: 1fr;
+  }
+  .app__metrics-col {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .app__main {
+    padding: 0 var(--space-4) var(--space-8);
+    gap: var(--space-4);
+  }
+}

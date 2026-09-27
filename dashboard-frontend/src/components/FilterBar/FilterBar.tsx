@@ -1,5 +1,3 @@
-// src/components/FilterBar/FilterBar.tsx
-// Compact single-row filter strip. No sidebar, no modal.
 import type { FilterOptionsResponse } from '../../types';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
 import './FilterBar.css';
@@ -10,11 +8,9 @@ interface FilterBarProps {
   yearRange: [number, number];
   onYearRangeChange: (range: [number, number]) => void;
   carrierVisibility: CarrierVisibility;
-  onCarrierVisibilityChange: (visibility: CarrierVisibility) => void;
+  onCarrierVisibilityChange: (value: CarrierVisibility) => void;
   filterOptions: FilterOptionsResponse | null;
 }
-
-type CompareMode = 'both' | 'Airtel' | 'Jio';
 
 export function FilterBar({
   selectedState,
@@ -25,116 +21,77 @@ export function FilterBar({
   onCarrierVisibilityChange,
   filterOptions,
 }: FilterBarProps) {
-  const yearMin = filterOptions?.year_min ?? 2021;
-  const yearMax = filterOptions?.year_max ?? 2025;
+  const years = filterOptions
+    ? Array.from({ length: filterOptions.year_max - filterOptions.year_min + 1 }, (_, i) => filterOptions.year_max - i)
+    : [2025, 2024, 2023, 2022, 2021];
 
-  const handleStartYear = (v: number) => onYearRangeChange([Math.min(v, yearRange[1]), yearRange[1]]);
-  const handleEndYear   = (v: number) => onYearRangeChange([yearRange[0], Math.max(v, yearRange[0])]);
-
-  const compareMode: CompareMode =
-    carrierVisibility.Airtel && carrierVisibility.Jio ? 'both' :
-    carrierVisibility.Airtel ? 'Airtel' : 'Jio';
-
-  const setCompare = (mode: CompareMode) => {
-    if (mode === 'both') onCarrierVisibilityChange({ Airtel: true, Jio: true });
-    else onCarrierVisibilityChange({ Airtel: mode === 'Airtel', Jio: mode === 'Jio' });
-  };
-
-  const isFiltered =
-    selectedState !== undefined ||
-    yearRange[0] !== yearMin ||
-    yearRange[1] !== yearMax ||
-    compareMode !== 'both';
-
-  const resetAll = () => {
+  const reset = () => {
     onStateChange(undefined);
-    onYearRangeChange([yearMin, yearMax]);
-    setCompare('both');
+    const min = filterOptions?.year_min ?? 2021;
+    const max = filterOptions?.year_max ?? 2025;
+    onYearRangeChange([min, max]);
+    onCarrierVisibilityChange({ Airtel: true, Jio: true });
   };
+
+  const bothOperators = carrierVisibility.Airtel && carrierVisibility.Jio;
 
   return (
-    <div className="filterbar" role="region" aria-label="Dashboard filters">
+    <section className="filterbar" aria-label="Dashboard filters">
       <div className="filterbar__inner">
-
-        {/* Operator toggle */}
-        <div className="filterbar__group">
-          <span className="filterbar__label">View</span>
-          <div className="filterbar__chips" role="group" aria-label="Select operator comparison">
-            {(['both', 'Airtel', 'Jio'] as const).map((mode) => (
+        <div className="filterbar__group filterbar__group--operator">
+          <span className="filterbar__eyebrow">Compare</span>
+          <div className="operator-toggle" role="group" aria-label="Operators">
+            {(['Airtel', 'Jio'] as const).map((operator) => (
               <button
-                key={mode}
+                key={operator}
                 type="button"
-                className={`filterbar__chip ${compareMode === mode ? 'filterbar__chip--active' : ''}`}
-                aria-pressed={compareMode === mode}
-                onClick={() => setCompare(mode)}
+                className={`operator-toggle__btn operator-toggle__btn--${operator.toLowerCase()} ${carrierVisibility[operator] ? 'is-active' : ''}`}
+                aria-pressed={carrierVisibility[operator]}
+                onClick={() => {
+                  const next = { ...carrierVisibility, [operator]: !carrierVisibility[operator] };
+                  if (!next.Airtel && !next.Jio) return;
+                  onCarrierVisibilityChange(next);
+                }}
               >
-                {mode !== 'Jio' && (
-                  <span className="filterbar__chip-dot filterbar__chip-dot--airtel" aria-hidden="true" />
-                )}
-                {mode !== 'Airtel' && (
-                  <span className="filterbar__chip-dot filterbar__chip-dot--jio" aria-hidden="true" />
-                )}
-                {mode === 'both' ? 'Both' : mode}
+                <span /> {operator}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Separator */}
-        <div className="filterbar__sep" aria-hidden="true" />
-
-        {/* State */}
-        <div className="filterbar__group">
-          <label className="filterbar__label" htmlFor="loc-select">State</label>
-          <select
-            id="loc-select"
-            className="filterbar__select"
-            value={selectedState ?? ''}
-            onChange={(e) => onStateChange(e.target.value === '' ? undefined : e.target.value)}
-          >
+        <label className="filterbar__field">
+          <span className="filterbar__eyebrow">State</span>
+          <select value={selectedState ?? ''} onChange={(e) => onStateChange(e.target.value || undefined)}>
             <option value="">All India</option>
-            {(filterOptions?.states ?? []).map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
+            {filterOptions?.states.map((state) => <option key={state} value={state}>{state}</option>)}
           </select>
-        </div>
+        </label>
 
-        {/* Separator */}
-        <div className="filterbar__sep" aria-hidden="true" />
-
-        {/* Year range */}
         <div className="filterbar__group">
-          <label className="filterbar__label">Years</label>
-          <div className="filterbar__year-group">
-            <span className="filterbar__year-val tabular">{yearRange[0]}</span>
-            <div className="filterbar__year-sliders">
-              <input
-                type="range" min={yearMin} max={yearMax} value={yearRange[0]}
-                className="filterbar__range"
-                aria-label="Start year"
-                onChange={(e) => handleStartYear(Number(e.target.value))}
-              />
-              <input
-                type="range" min={yearMin} max={yearMax} value={yearRange[1]}
-                className="filterbar__range"
-                aria-label="End year"
-                onChange={(e) => handleEndYear(Number(e.target.value))}
-              />
-            </div>
-            <span className="filterbar__year-val tabular">{yearRange[1]}</span>
+          <span className="filterbar__eyebrow">Years</span>
+          <div className="year-fields">
+            <select
+              aria-label="Start year"
+              value={yearRange[0]}
+              onChange={(e) => onYearRangeChange([Math.min(Number(e.target.value), yearRange[1]), yearRange[1]])}
+            >
+              {years.slice().reverse().map((year) => <option key={year} value={year}>{year}</option>)}
+            </select>
+            <span>—</span>
+            <select
+              aria-label="End year"
+              value={yearRange[1]}
+              onChange={(e) => onYearRangeChange([yearRange[0], Math.max(Number(e.target.value), yearRange[0])])}
+            >
+              {years.map((year) => <option key={year} value={year}>{year}</option>)}
+            </select>
           </div>
         </div>
 
-        {/* Reset */}
-        {isFiltered && (
-          <>
-            <div className="filterbar__sep" aria-hidden="true" />
-            <button type="button" className="filterbar__reset" onClick={resetAll}>
-              Clear filters
-            </button>
-          </>
-        )}
+        <button type="button" className="filterbar__reset" onClick={reset} disabled={bothOperators && !selectedState && filterOptions ? yearRange[0] === filterOptions.year_min && yearRange[1] === filterOptions.year_max : false}>
+          Reset
+        </button>
       </div>
-    </div>
+    </section>
   );
 }

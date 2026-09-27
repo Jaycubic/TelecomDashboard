@@ -1,117 +1,41 @@
-/* TopBar.css */
 .topbar {
-  background: var(--color-surface-1);
-  border-bottom: 1px solid var(--color-border);
   position: sticky;
   top: 0;
   z-index: 100;
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .topbar__inner {
+  width: min(1480px, calc(100% - 48px));
+  min-height: 64px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-6);
-  height: 52px;
-  max-width: 1600px;
-  margin: 0 auto;
-  width: 100%;
+  gap: 24px;
 }
 
-.topbar__brand {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
+.topbar__brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.topbar__mark { width: 24px; height: 24px; display: flex; align-items: end; gap: 3px; }
+.topbar__mark span { width: 5px; border-radius: 999px 999px 2px 2px; background: currentColor; display: block; }
+.topbar__mark span:nth-child(1) { height: 8px; color: var(--color-airtel); }
+.topbar__mark span:nth-child(2) { height: 15px; color: var(--color-jio); }
+.topbar__mark span:nth-child(3) { height: 21px; color: var(--color-ink); opacity: .35; }
+.topbar__wordmark { font-size: 15px; line-height: 1.15; font-weight: 700; letter-spacing: -.02em; color: var(--color-ink); }
+.topbar__sub { margin-top: 2px; font-size: 11px; line-height: 1.3; color: var(--color-ink-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar__actions { display: flex; align-items: center; gap: 14px; }
+.topbar__status { font-size: 11px; color: var(--color-ink-secondary); }
+.topbar__status-ready, .topbar__status-loading { display: inline-flex; align-items: center; gap: 7px; }
+.topbar__status-ready span { width: 6px; height: 6px; border-radius: 50%; background: var(--color-positive); box-shadow: 0 0 0 3px var(--color-positive-dim); }
+.topbar__status-error { color: var(--color-negative); }
+.topbar__spinner { width: 11px; height: 11px; border: 1px solid var(--color-border-strong); border-top-color: var(--color-jio); border-radius: 50%; animation: spin .7s linear infinite; }
+.topbar__theme-btn { width: 32px; height: 32px; border-radius: 10px; border: 1px solid var(--color-border); background: var(--color-surface-1); color: var(--color-ink-secondary); display: grid; place-items: center; transition: .16s ease; }
+.topbar__theme-btn:hover { border-color: var(--color-border-strong); color: var(--color-ink); transform: translateY(-1px); }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.topbar__signal {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.topbar__dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.topbar__dot--airtel { background: var(--color-airtel); }
-.topbar__dot--jio    { background: var(--color-jio); }
-
-.topbar__wordmark {
-  font-family: var(--font-display);
-  font-size: var(--text-md);
-  color: var(--color-ink);
-  letter-spacing: -0.02em;
-}
-
-.topbar__sub {
-  font-size: var(--text-xs);
-  color: var(--color-ink-tertiary);
-  font-weight: 400;
-  letter-spacing: 0;
-}
-
-.topbar__controls {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-}
-
-.topbar__status {
-  font-size: var(--text-sm);
-  color: var(--color-ink-secondary);
-}
-
-.topbar__status-error {
-  color: var(--color-negative);
-  font-size: var(--text-sm);
-}
-
-.topbar__status-loading {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  color: var(--color-ink-secondary);
-  font-size: var(--text-sm);
-}
-
-.topbar__spinner {
-  width: 12px;
-  height: 12px;
-  border: 1.5px solid var(--color-border-strong);
-  border-top-color: var(--color-jio);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.topbar__theme-btn {
-  background: none;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-ink-secondary);
-  font-size: 14px;
-  transition: border-color 0.15s, background 0.15s;
-}
-
-.topbar__theme-btn:hover {
-  border-color: var(--color-border-strong);
-  background: var(--color-surface-hover);
-  color: var(--color-ink);
-}
-
-@media (max-width: 640px) {
-  .topbar__sub { display: none; }
-  .topbar__inner { padding: 0 var(--space-4); }
+@media (max-width: 720px) {
+  .topbar__inner { width: min(100% - 28px, 1480px); min-height: 58px; }
+  .topbar__sub, .topbar__status { display: none; }
 }

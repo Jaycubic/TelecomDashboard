@@ -1,4 +1,3 @@
-// src/components/TopBar/TopBar.tsx
 import type { ThemeMode } from '../../hooks/useTheme';
 import './TopBar.css';
 
@@ -11,39 +10,41 @@ interface TopBarProps {
 
 export function TopBar({ loading, error, theme, onToggleTheme }: TopBarProps) {
   return (
-    <div className="topbar">
+    <header className="topbar">
       <div className="topbar__inner">
-        <div className="topbar__brand">
-          <span className="topbar__signal">
-            <span className="topbar__dot topbar__dot--airtel" />
-            <span className="topbar__dot topbar__dot--jio" />
-          </span>
-          <span className="topbar__wordmark">Signal Strength</span>
-          <span className="topbar__sub">Airtel vs Jio · India · 2021–2025</span>
+        <div className="topbar__brand" aria-label="Call quality dashboard">
+          <div className="topbar__mark" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+          <div>
+            <div className="topbar__wordmark">Call Quality</div>
+            <div className="topbar__sub">Airtel vs Jio · customer-reported voice experience</div>
+          </div>
         </div>
 
-        <div className="topbar__controls">
+        <div className="topbar__actions">
           <div className="topbar__status" role="status" aria-live="polite">
             {error ? (
-              <span className="topbar__status-error">{error}</span>
+              <span className="topbar__status-error">Data connection issue</span>
             ) : loading ? (
-              <span className="topbar__status-loading">
-                <span className="topbar__spinner" aria-hidden="true" />
-                Updating
-              </span>
-            ) : null}
+              <span className="topbar__status-loading"><span className="topbar__spinner" /> Updating</span>
+            ) : (
+              <span className="topbar__status-ready"><span /> Live data</span>
+            )}
           </div>
-
           <button
             type="button"
             className="topbar__theme-btn"
             onClick={onToggleTheme}
             aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
           >
-            <span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span>
+            <span aria-hidden="true">{theme === 'dark' ? '☀' : '◐'}</span>
           </button>
         </div>
       </div>
-    </div>
+    </header>
   );
 }

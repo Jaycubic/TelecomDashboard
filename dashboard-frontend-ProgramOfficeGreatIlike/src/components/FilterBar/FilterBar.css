@@ -1,0 +1,171 @@
+/* FilterBar.css */
+.filterbar {
+  background: var(--color-surface-1);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 52px;
+  z-index: 90;
+}
+
+.filterbar__inner {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 var(--space-6);
+  height: 48px;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.filterbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+  padding: 0 var(--space-4);
+}
+
+.filterbar__label {
+  font-size: var(--text-xs);
+  color: var(--color-ink-tertiary);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.filterbar__sep {
+  width: 1px;
+  height: 20px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+/* Operator chips */
+.filterbar__chips {
+  display: flex;
+  gap: 3px;
+}
+
+.filterbar__chip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px 10px;
+  border-radius: 100px;
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  cursor: pointer;
+}
+
+.filterbar__chip:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-strong);
+  color: var(--color-ink);
+}
+
+.filterbar__chip--active {
+  background: var(--color-surface-3);
+  border-color: var(--color-border-strong);
+  color: var(--color-ink);
+}
+
+.filterbar__chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.filterbar__chip-dot--airtel { background: var(--color-airtel); }
+.filterbar__chip-dot--jio    { background: var(--color-jio); }
+
+/* State select */
+.filterbar__select {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 4px 24px 4px 8px;
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235A6175' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  transition: border-color 0.12s;
+}
+
+.filterbar__select:hover {
+  border-color: var(--color-border-strong);
+}
+
+/* Year sliders */
+.filterbar__year-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.filterbar__year-val {
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+  min-width: 32px;
+}
+
+.filterbar__year-sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100px;
+}
+
+.filterbar__range {
+  width: 100%;
+  height: 2px;
+  appearance: none;
+  background: var(--color-surface-3);
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+}
+
+.filterbar__range::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--color-ink-secondary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.filterbar__range:hover::-webkit-slider-thumb,
+.filterbar__range:focus::-webkit-slider-thumb {
+  background: var(--color-ink);
+}
+
+/* Reset */
+.filterbar__reset {
+  background: none;
+  border: none;
+  padding: 4px 0;
+  font-size: var(--text-sm);
+  color: var(--color-jio);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.12s;
+  flex-shrink: 0;
+}
+
+.filterbar__reset:hover { color: var(--color-ink); }
+
+@media (max-width: 768px) {
+  .filterbar { position: static; }
+  .filterbar__inner { padding: 0 var(--space-4); }
+}

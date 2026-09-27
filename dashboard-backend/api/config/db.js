@@ -15,7 +15,7 @@ const schema = process.env.DBPB_SCHEMA || process.env.DBP_SCHEMA || 'public';
 const pool = new Pool({
   database: process.env.DBPB_NAME || process.env.DBP_NAME || 'dashboard',
   user: process.env.DBPB_USER || process.env.DBP_USER || 'jofrey',
-  password: process.env.DBPB_PASSWORD || process.env.DBP_PASSWORD || '2025',
+  password: process.env.DBPB_PASSWORD || process.env.DBP_PASSWORD || '',
   host: process.env.DBPB_HOST || process.env.DBP_HOST || 'localhost',
   port: parseInt(process.env.DBPB_PORT || process.env.DBP_PORT || '5432', 10),
   options: `-c search_path=${schema}`,

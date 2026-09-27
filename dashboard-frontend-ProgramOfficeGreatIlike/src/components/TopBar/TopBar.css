@@ -1,0 +1,117 @@
+/* TopBar.css */
+.topbar {
+  background: var(--color-surface-1);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  height: 52px;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.topbar__signal {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.topbar__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.topbar__dot--airtel { background: var(--color-airtel); }
+.topbar__dot--jio    { background: var(--color-jio); }
+
+.topbar__wordmark {
+  font-family: var(--font-display);
+  font-size: var(--text-md);
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+}
+
+.topbar__sub {
+  font-size: var(--text-xs);
+  color: var(--color-ink-tertiary);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.topbar__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.topbar__status {
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+}
+
+.topbar__status-error {
+  color: var(--color-negative);
+  font-size: var(--text-sm);
+}
+
+.topbar__status-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
+}
+
+.topbar__spinner {
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid var(--color-border-strong);
+  border-top-color: var(--color-jio);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.topbar__theme-btn {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-ink-secondary);
+  font-size: 14px;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.topbar__theme-btn:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-surface-hover);
+  color: var(--color-ink);
+}
+
+@media (max-width: 640px) {
+  .topbar__sub { display: none; }
+  .topbar__inner { padding: 0 var(--space-4); }
+}

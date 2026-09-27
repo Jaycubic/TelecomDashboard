@@ -1,14 +1,11 @@
-// src/components/Map/IndiaMap.tsx
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { INDIA_STATE_FEATURES, buildProjection } from '../../lib/geo';
-import { buildStateFillMap, type StateFillResult } from '../../lib/mapColor';
+import { formatNumber, formatPct } from '../../lib/format';
 import { toGeoJsonStateName } from '../../lib/stateNameMap';
-import { formatPct } from '../../lib/format';
-import { toNumber } from '../../lib/format';
-import { CHART_THEME } from '../../lib/constants';
 import type { ConfidenceRow, StateQualityRow } from '../../types';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
 import type { ThemeMode } from '../../hooks/useTheme';
+import { metricLeader } from '../../lib/analysis';
 import './IndiaMap.css';
 
 interface IndiaMapProps {
@@ -23,9 +20,7 @@ interface IndiaMapProps {
 interface TooltipState {
   x: number;
   y: number;
-  stName: string;
-  rows: StateQualityRow[];
-  fillInfo: StateFillResult | undefined;
+  stateName: string;
 }
 
 export function IndiaMap({
@@ -36,270 +31,169 @@ export function IndiaMap({
   onSelectState,
   theme,
 }: IndiaMapProps) {
-  const colors = CHART_THEME[theme];
   const containerRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 720, height: 680 });
+  const [size, setSize] = useState({ width: 720, height: 650 });
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0];
+    const observer = new ResizeObserver(([entry]) => {
       if (!entry) return;
-      const { width } = entry.contentRect;
-      setSize({ width, height: Math.max(440, width * 0.88) });
+      const width = entry.contentRect.width;
+      setSize({ width, height: Math.max(440, width * .86) });
     });
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    if (!hasAnimated && stateRows.length > 0) setHasAnimated(true);
-  }, [stateRows, hasAnimated]);
+    if (!hasAnimated && stateRows.length) setHasAnimated(true);
+  }, [stateRows.length, hasAnimated]);
 
   const { path } = useMemo(() => buildProjection(size.width, size.height), [size.width, size.height]);
 
-  const fillMap = useMemo(
-    () => buildStateFillMap(stateRows, confidenceRows, carrierVisibility, colors.noData),
-    [stateRows, confidenceRows, carrierVisibility, colors.noData],
-  );
-
-  const rowsByGeoName = useMemo(() => {
+  const rowsByGeo = useMemo(() => {
     const map = new Map<string, StateQualityRow[]>();
     for (const row of stateRows) {
-      const geoName = toGeoJsonStateName(row.state_name);
-      const list = map.get(geoName) ?? [];
-      list.push(row);
-      map.set(geoName, list);
+      const key = toGeoJsonStateName(row.state_name);
+      map.set(key, [...(map.get(key) ?? []), row]);
     }
     return map;
   }, [stateRows]);
 
-  const selectedGeoName = selectedState ? toGeoJsonStateName(selectedState) : undefined;
+  const lowConfidence = useMemo(() => {
+    return new Set(
+      confidenceRows.filter((row) => row.confidence === 'low').map((row) => toGeoJsonStateName(row.state_name)),
+    );
+  }, [confidenceRows]);
+
+  const selectedGeo = selectedState ? toGeoJsonStateName(selectedState) : undefined;
 
   return (
-    <div className="india-map">
-      {/* Map header */}
-      <div className="india-map__header">
+    <section className="map-card">
+      <div className="map-card__header">
         <div>
-          <h2 className="india-map__title">Where does each operator lead?</h2>
-          <p className="india-map__subtitle">
-            Each state is shaded by which network customers report better call quality with.
-            {selectedState && (
-              <> Filtered to <strong>{selectedState}</strong> —{' '}
-                <button className="india-map__clear" onClick={() => onSelectState(undefined)}>
-                  show all states
-                </button>
-              </>
-            )}
-          </p>
+          <div className="section-kicker">Geography</div>
+          <h2>Where does the gap show up?</h2>
+          <p>Each state is colored by the operator with the higher customer-reported average rating. Click a state to focus the dashboard.</p>
         </div>
+        <div className="map-card__legend" aria-label="Map legend">
+          <span><i className="legend-dot legend-dot--airtel" /> Airtel higher</span>
+          <span><i className="legend-dot legend-dot--jio" /> Jio higher</span>
+          <span><i className="legend-dot legend-dot--similar" /> Similar</span>
+          <span><i className="legend-hatch" /> Limited reports</span>
+        </div>
+      </div>
 
-        {/* Legend */}
-        <div className="india-map__legend">
-          <span className="india-map__legend-item">
-            <span className="india-map__legend-swatch india-map__legend-swatch--airtel" />
-            Airtel ahead
-          </span>
-          <span className="india-map__legend-item">
-            <span className="india-map__legend-swatch india-map__legend-swatch--jio" />
-            Jio ahead
-          </span>
-          <span className="india-map__legend-item">
-            <span className="india-map__legend-swatch india-map__legend-swatch--tie" />
-            Similar
-          </span>
-          <span
-            className="india-map__legend-item"
-            title="Fewer than 30 reports — treat as directional, not conclusive"
+      <div className="map-card__body">
+        <div className="map-card__canvas" ref={containerRef}>
+          <svg
+            width={size.width}
+            height={size.height}
+            className="map-svg"
+            role="img"
+            aria-label="Map of India comparing Airtel and Jio customer-reported average call quality by state"
           >
-            <span className="india-map__legend-swatch india-map__legend-swatch--hatch" />
-            Limited data
-          </span>
+            <defs>
+              <pattern id="map-hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="0" x2="0" y2="6" stroke={theme === 'dark' ? '#FFFFFF' : '#111827'} strokeOpacity=".22" strokeWidth="1.2" />
+              </pattern>
+            </defs>
+            {INDIA_STATE_FEATURES.map((feature) => {
+              const name = feature.properties.ST_NM;
+              const rows = rowsByGeo.get(name) ?? [];
+              const a = rows.find((row) => row.operator === 'Airtel');
+              const j = rows.find((row) => row.operator === 'Jio');
+              const av = a?.avg_rating == null ? null : Number(a.avg_rating);
+              const jv = j?.avg_rating == null ? null : Number(j.avg_rating);
+              const visibleA = carrierVisibility.Airtel ? av : null;
+              const visibleJ = carrierVisibility.Jio ? jv : null;
+              const leader = metricLeader(visibleA, visibleJ, 'higherIsBetter', .05);
+              const hasData = visibleA !== null || visibleJ !== null;
+              const isSelected = selectedGeo === name;
+              const isDimmed = !!selectedGeo && !isSelected;
+              const fill = leader === 'Airtel' ? 'var(--color-airtel)' : leader === 'Jio' ? 'var(--color-jio)' : leader === 'similar' ? 'var(--color-neutral)' : 'var(--color-surface-3)';
+              const opacity = hasData ? (isDimmed ? .16 : leader === 'similar' ? .7 : .85) : .55;
+              const d = path(feature as unknown as GeoJSON.Geometry) ?? '';
+
+              return (
+                <g key={name}>
+                  <path
+                    d={d}
+                    fill={fill}
+                    fillOpacity={opacity}
+                    stroke={isSelected ? 'var(--color-ink)' : 'var(--color-map-stroke)'}
+                    strokeWidth={isSelected ? 2.4 : 0.8}
+                    className={`map-state ${hasAnimated ? 'map-state--animated' : ''}`}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`${name}. ${leader === 'Airtel' ? 'Airtel has the higher average rating.' : leader === 'Jio' ? 'Jio has the higher average rating.' : leader === 'similar' ? 'Average ratings are similar.' : 'No comparable data.'}`}
+                    onClick={() => onSelectState(selectedGeo === name ? undefined : name)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        onSelectState(selectedGeo === name ? undefined : name);
+                      }
+                    }}
+                    onMouseMove={(event) => {
+                      const rect = containerRef.current?.getBoundingClientRect();
+                      if (!rect) return;
+                      setTooltip({ x: event.clientX - rect.left, y: event.clientY - rect.top, stateName: name });
+                    }}
+                    onMouseLeave={() => setTooltip(null)}
+                  />
+                  {lowConfidence.has(name) && hasData && <path d={d} fill="url(#map-hatch)" pointerEvents="none" opacity={isDimmed ? .22 : .9} />}
+                </g>
+              );
+            })}
+          </svg>
+
+          {tooltip && <MapTooltip {...tooltip} rows={rowsByGeo.get(tooltip.stateName) ?? []} lowConfidence={lowConfidence.has(tooltip.stateName)} />}
         </div>
       </div>
-
-      {/* SVG map */}
-      <div className="india-map__svg-wrap" ref={containerRef}>
-        <svg
-          width={size.width}
-          height={size.height}
-          role="img"
-          aria-label="Map of India showing which mobile network — Airtel or Jio — customers report better call quality with in each state."
-          className="india-map__svg"
-        >
-          <defs>
-            <pattern
-              id="hatch-pattern"
-              width="5"
-              height="5"
-              patternTransform="rotate(45)"
-              patternUnits="userSpaceOnUse"
-            >
-              <line
-                x1="0" y1="0" x2="0" y2="5"
-                stroke={theme === 'dark' ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)'}
-                strokeWidth="1.2"
-              />
-            </pattern>
-
-            {/* Drop shadow filter for selected state */}
-            <filter id="state-glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
-              <feFlood floodColor={theme === 'dark' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'} result="color" />
-              <feComposite in="color" in2="blur" operator="in" result="shadow" />
-              <feMerge>
-                <feMergeNode in="shadow" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          </defs>
-
-          {/* State fills */}
-          {INDIA_STATE_FEATURES.map((f) => {
-            const name = f.properties.ST_NM;
-            const info = fillMap.get(name);
-            const d = path(f as unknown as GeoJSON.Geometry) ?? '';
-            const isSelected = selectedGeoName === name;
-            const isDimmed = selectedGeoName !== undefined && !isSelected;
-
-            return (
-              <path
-                key={name}
-                d={d}
-                fill={info ? info.fill : colors.noData}
-                fillOpacity={isDimmed ? 0.22 : info ? info.opacity : 1}
-                stroke={isSelected
-                  ? (theme === 'dark' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)')
-                  : theme === 'dark' ? 'rgba(13,17,23,0.8)' : 'rgba(255,255,255,0.9)'}
-                strokeWidth={isSelected ? 2 : 0.75}
-                className={`india-map__state ${hasAnimated ? 'india-map__state--drawn' : ''}`}
-                tabIndex={0}
-                role="button"
-                aria-label={`${name}: ${
-                  info?.hasData
-                    ? info.leadingOperator === 'tie'
-                      ? 'Airtel and Jio report similar quality'
-                      : `${info.leadingOperator} leads`
-                    : 'no reports for current filters'
-                }. Click to filter to this state.`}
-                onClick={() => onSelectState(selectedGeoName === name ? undefined : name)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onSelectState(selectedGeoName === name ? undefined : name);
-                  }
-                }}
-                onMouseMove={(e) => {
-                  const rect = containerRef.current?.getBoundingClientRect();
-                  if (!rect) return;
-                  setTooltip({
-                    x: e.clientX - rect.left,
-                    y: e.clientY - rect.top,
-                    stName: name,
-                    rows: rowsByGeoName.get(name) ?? [],
-                    fillInfo: info,
-                  });
-                }}
-                onMouseLeave={() => setTooltip(null)}
-              />
-            );
-          })}
-
-          {/* Low-confidence hatch overlay */}
-          {INDIA_STATE_FEATURES.map((f) => {
-            const name = f.properties.ST_NM;
-            const info = fillMap.get(name);
-            if (!info?.lowConfidence) return null;
-            const d = path(f as unknown as GeoJSON.Geometry) ?? '';
-            return (
-              <path
-                key={`${name}-hatch`}
-                d={d}
-                fill="url(#hatch-pattern)"
-                pointerEvents="none"
-                opacity={selectedGeoName && selectedGeoName !== name ? 0.22 : 1}
-              />
-            );
-          })}
-        </svg>
-
-        {/* Tooltip */}
-        {tooltip && (
-          <MapTooltip tooltip={tooltip} />
-        )}
-      </div>
-    </div>
+    </section>
   );
 }
 
-function MapTooltip({ tooltip }: { tooltip: TooltipState }) {
-  const { x, y, stName, rows, fillInfo } = tooltip;
-
-  const airtelRow = rows.find((r) => r.operator === 'Airtel');
-  const jioRow    = rows.find((r) => r.operator === 'Jio');
-
-  const leaderLabel =
-    fillInfo?.leadingOperator === 'Airtel' ? 'Airtel ahead' :
-    fillInfo?.leadingOperator === 'Jio'    ? 'Jio ahead' :
-    fillInfo?.leadingOperator === 'tie'    ? 'Similar quality' : null;
+function MapTooltip({ x, y, stateName, rows, lowConfidence }: TooltipState & { rows: StateQualityRow[]; lowConfidence: boolean }) {
+  const airtel = rows.find((row) => row.operator === 'Airtel');
+  const jio = rows.find((row) => row.operator === 'Jio');
+  const av = airtel?.avg_rating == null ? null : Number(airtel.avg_rating);
+  const jv = jio?.avg_rating == null ? null : Number(jio.avg_rating);
+  const leader = metricLeader(av, jv, 'higherIsBetter', .05);
 
   return (
-    <div
-      className="india-map__tooltip"
-      style={{ left: x + 14, top: y + 14 }}
-      role="tooltip"
-    >
-      <div className="india-map__tooltip-header">
-        <span className="india-map__tooltip-name">{stName}</span>
-        {leaderLabel && (
-          <span className={`india-map__tooltip-verdict india-map__tooltip-verdict--${fillInfo?.leadingOperator}`}>
-            {leaderLabel}
-          </span>
-        )}
+    <div className="map-tooltip" style={{ left: Math.min(x + 14, Math.max(8, x - 220)), top: Math.min(y + 14, 500) }} role="tooltip">
+      <div className="map-tooltip__top">
+        <strong>{stateName}</strong>
+        <span className={leader === 'Airtel' ? 'airtel' : leader === 'Jio' ? 'jio' : ''}>
+          {leader === 'Airtel' ? 'Airtel higher' : leader === 'Jio' ? 'Jio higher' : leader === 'similar' ? 'Similar' : 'No comparison'}
+        </span>
       </div>
-
-      {rows.length === 0 ? (
-        <p className="india-map__tooltip-empty">No reports for current filters</p>
-      ) : (
-        <table className="india-map__tooltip-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Rating</th>
-              <th>Call drops</th>
-              <th>Poor voice</th>
-            </tr>
-          </thead>
-          <tbody>
-            {airtelRow && (
-              <tr>
-                <td><span className="india-map__tooltip-dot india-map__tooltip-dot--airtel" /> Airtel</td>
-                <td className="tabular">{toNumber(airtelRow.avg_rating)?.toFixed(1) ?? '—'} / 5</td>
-                <td className="tabular">{formatPct(airtelRow.call_drop_pct)}</td>
-                <td className="tabular">{formatPct(airtelRow.poor_voice_pct)}</td>
-              </tr>
-            )}
-            {jioRow && (
-              <tr>
-                <td><span className="india-map__tooltip-dot india-map__tooltip-dot--jio" /> Jio</td>
-                <td className="tabular">{toNumber(jioRow.avg_rating)?.toFixed(1) ?? '—'} / 5</td>
-                <td className="tabular">{formatPct(jioRow.call_drop_pct)}</td>
-                <td className="tabular">{formatPct(jioRow.poor_voice_pct)}</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      )}
-
-      {fillInfo?.lowConfidence && (
-        <p className="india-map__tooltip-caveat">
-          ⚠ Limited feedback — treat as directional
-        </p>
-      )}
-      <p className="india-map__tooltip-hint">Click to filter to this state</p>
+      <div className="map-tooltip__rows">
+        {(['Airtel', 'Jio'] as const).map((operator) => {
+          const row = operator === 'Airtel' ? airtel : jio;
+          const rating = row?.avg_rating == null ? null : Number(row.avg_rating);
+          return (
+            <div className="map-tooltip__row" key={operator}>
+              <span><i className={`legend-dot legend-dot--${operator.toLowerCase()}`} /> {operator}</span>
+              <b>{rating === null || !Number.isFinite(rating) ? '—' : `${rating.toFixed(2)} / 5`}</b>
+            </div>
+          );
+        })}
+      </div>
+      <div className="map-tooltip__meta">
+        <span>Call drops</span>
+        <span>{formatPct(airtel?.call_drop_pct)} · {formatPct(jio?.call_drop_pct)}</span>
+      </div>
+      <div className="map-tooltip__meta">
+        <span>Reports</span>
+        <span>{formatNumber(airtel?.total_reports)} · {formatNumber(jio?.total_reports)}</span>
+      </div>
+      {lowConfidence && <p className="map-tooltip__note">Limited feedback: fewer than 30 reports.</p>}
+      <p className="map-tooltip__hint">Click the state to filter the dashboard.</p>
     </div>
   );
 }

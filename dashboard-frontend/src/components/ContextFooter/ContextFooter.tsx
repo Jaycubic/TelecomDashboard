@@ -1,40 +1,24 @@
-// src/components/ContextFooter/ContextFooter.tsx
 import './ContextFooter.css';
 
 export function ContextFooter() {
   return (
     <footer className="ctx-footer">
+      <div className="ctx-footer__intro">
+        <div className="section-kicker">Read the data with context</div>
+        <h2>What the dashboard can — and cannot — tell you</h2>
+      </div>
       <div className="ctx-footer__grid">
         <div className="ctx-footer__cell">
-          <p className="ctx-footer__heading">How to read this</p>
-          <p className="ctx-footer__body">
-            The map and metrics show which network customers in each location reported
-            better voice call quality with. Deeper color on the map means a wider gap
-            between the two operators, not a higher absolute score. States with a hatch
-            pattern have fewer than 30 reports — treat those as directional signals only.
-          </p>
+          <p className="ctx-footer__heading">What is shown</p>
+          <p className="ctx-footer__body">Customer-reported voice-call quality across Airtel and Jio, using ratings, call-drop classifications, poor-voice classifications, call setting, state, and date filters available from the dashboard API.</p>
         </div>
-
         <div className="ctx-footer__cell">
-          <p className="ctx-footer__heading">What this data doesn't cover</p>
-          <p className="ctx-footer__body">
-            Self-reported feedback likely over-represents engaged or dissatisfied users.
-            Rural areas with poor connectivity may also be underrepresented. No data on
-            price, plan type, or device type — call quality alone doesn't explain customer
-            choices. Coverage on the radar reflects how many states have any reports, not
-            signal strength within a state.
-          </p>
+          <p className="ctx-footer__heading">How to read the map</p>
+          <p className="ctx-footer__body">Airtel or Jio coloring means that operator has the higher average customer rating in the current state view. A neutral state means the ratings are close. Hatching marks states with limited feedback.</p>
         </div>
-
         <div className="ctx-footer__cell">
-          <p className="ctx-footer__heading">Data source</p>
-          <p className="ctx-footer__body">
-            Customer-reported voice call quality feedback from Airtel and Jio, 2021–2025.
-            Fields: call context (indoor/outdoor/travelling), network type, rating, call-drop
-            category, location, and date. State boundaries from DataMeet's India administrative
-            boundaries (GeoJSON). Rows with invalid rating, year, or region are excluded during
-            ingestion rather than corrected.
-          </p>
+          <p className="ctx-footer__heading">Important limitation</p>
+          <p className="ctx-footer__body">These are customer reports, not a census of every call. Differences can reflect who submitted feedback as well as network experience. The dashboard does not establish why a difference exists.</p>
         </div>
       </div>
     </footer>

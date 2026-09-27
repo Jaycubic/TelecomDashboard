@@ -1,218 +1,40 @@
-/* IndiaMap.css */
-.india-map {
-  background: var(--color-surface-1);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
+.map-card { background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: 18px; overflow: hidden; }
+.map-card__header { padding: 24px 26px 20px; display: flex; justify-content: space-between; align-items: flex-start; gap: 28px; border-bottom: 1px solid var(--color-border); }
+.map-card__header h2 { font-size: 20px; letter-spacing: -.025em; margin: 4px 0 6px; }
+.map-card__header p { max-width: 690px; font-size: 12px; line-height: 1.65; color: var(--color-ink-secondary); }
+.section-kicker { text-transform: uppercase; letter-spacing: .11em; font-size: 9px; font-weight: 800; color: var(--color-ink-tertiary); }
+.map-card__legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 11px 15px; max-width: 460px; padding-top: 3px; }
+.map-card__legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--color-ink-secondary); font-size: 10px; white-space: nowrap; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: 0 0 auto; }
+.legend-dot--airtel { background: var(--color-airtel); }
+.legend-dot--jio { background: var(--color-jio); }
+.legend-dot--similar { background: var(--color-neutral); }
+.legend-hatch { width: 10px; height: 10px; border-radius: 3px; background: repeating-linear-gradient(45deg, var(--color-ink-tertiary) 0 1px, transparent 1px 4px), var(--color-surface-3); border: 1px solid var(--color-border-strong); }
+.map-card__body { padding: 8px 20px 18px; }
+.map-card__canvas { position: relative; width: 100%; min-height: 420px; overflow: hidden; }
+.map-svg { display: block; width: 100%; height: auto; }
+.map-svg { --color-map-stroke: rgba(255,255,255,.7); }
+[data-theme='light'] .map-svg { --color-map-stroke: rgba(17,24,39,.15); }
+.map-state { cursor: pointer; transition: filter .15s ease, fill-opacity .15s ease; outline: none; }
+.map-state:hover { filter: brightness(1.08); }
+.map-state:focus-visible { stroke-width: 2.4px !important; stroke: var(--color-ink) !important; }
+.map-state--animated { animation: stateIn .34s ease both; }
+@keyframes stateIn { from { opacity: 0; } to { opacity: 1; } }
+.map-tooltip { position: absolute; width: 216px; max-width: calc(100% - 16px); padding: 12px 13px; pointer-events: none; background: var(--color-surface-1); border: 1px solid var(--color-border-strong); border-radius: 12px; box-shadow: var(--shadow-md); z-index: 4; }
+.map-tooltip__top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.map-tooltip__top strong { font-size: 13px; }
+.map-tooltip__top span { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; }
+.map-tooltip__rows { display: grid; gap: 5px; padding-bottom: 8px; border-bottom: 1px solid var(--color-border); }
+.map-tooltip__row { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 11px; color: var(--color-ink-secondary); }
+.map-tooltip__row span { display: inline-flex; align-items: center; gap: 7px; }
+.map-tooltip__row b { color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.map-tooltip__meta { display: flex; justify-content: space-between; gap: 12px; padding-top: 6px; font-size: 10px; color: var(--color-ink-tertiary); }
+.map-tooltip__meta span:last-child { color: var(--color-ink-secondary); font-variant-numeric: tabular-nums; }
+.map-tooltip__note { margin-top: 9px; color: var(--color-caution); font-size: 10px; line-height: 1.45; }
+.map-tooltip__hint { margin-top: 7px; color: var(--color-ink-tertiary); font-size: 9px; }
 
-.india-map__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--space-6);
-  padding: var(--space-5) var(--space-6);
-  border-bottom: 1px solid var(--color-border);
-  flex-wrap: wrap;
-}
-
-.india-map__title {
-  font-size: var(--text-md);
-  font-weight: 600;
-  color: var(--color-ink);
-  letter-spacing: -0.02em;
-  margin-bottom: var(--space-1);
-}
-
-.india-map__subtitle {
-  font-size: var(--text-sm);
-  color: var(--color-ink-secondary);
-  line-height: 1.5;
-}
-
-.india-map__clear {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--color-jio);
-  font-size: inherit;
-  text-decoration: underline;
-  cursor: pointer;
-}
-.india-map__clear:hover { color: var(--color-ink); }
-
-/* Legend */
-.india-map__legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  flex-shrink: 0;
-}
-
-.india-map__legend-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-xs);
-  color: var(--color-ink-secondary);
-  white-space: nowrap;
-}
-
-.india-map__legend-swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.india-map__legend-swatch--airtel { background: var(--color-airtel); opacity: 0.85; }
-.india-map__legend-swatch--jio    { background: var(--color-jio);    opacity: 0.85; }
-.india-map__legend-swatch--tie    { background: var(--color-tie); }
-.india-map__legend-swatch--hatch  {
-  background-image: repeating-linear-gradient(
-    45deg,
-    var(--color-ink-secondary),
-    var(--color-ink-secondary) 1px,
-    transparent 1px,
-    transparent 4px
-  );
-  background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-}
-
-/* SVG */
-.india-map__svg-wrap {
-  position: relative;
-  width: 100%;
-}
-
-.india-map__svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.india-map__state {
-  cursor: pointer;
-  transition: fill-opacity 0.18s ease, stroke 0.1s ease;
-}
-
-.india-map__state:hover {
-  stroke-width: 1.5 !important;
-}
-
-.india-map__state--drawn {
-  animation: fadeIn 0.4s ease both;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* Tooltip */
-.india-map__tooltip {
-  position: absolute;
-  background: var(--color-surface-1);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
-  pointer-events: none;
-  z-index: 200;
-  max-width: 280px;
-  box-shadow: var(--shadow-md);
-}
-
-.india-map__tooltip-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.india-map__tooltip-name {
-  font-weight: 600;
-  font-size: var(--text-sm);
-  color: var(--color-ink);
-}
-
-.india-map__tooltip-verdict {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 100px;
-}
-.india-map__tooltip-verdict--Airtel {
-  background: var(--color-airtel-dim);
-  color: var(--color-airtel);
-}
-.india-map__tooltip-verdict--Jio {
-  background: var(--color-jio-dim);
-  color: var(--color-jio);
-}
-.india-map__tooltip-verdict--tie {
-  background: var(--color-neutral-dim, rgba(90,97,117,0.15));
-  color: var(--color-ink-secondary);
-}
-
-.india-map__tooltip-table {
-  border-collapse: collapse;
-  font-size: var(--text-xs);
-  color: var(--color-ink-secondary);
-  width: 100%;
-  margin-bottom: var(--space-2);
-}
-
-.india-map__tooltip-table th {
-  font-weight: 500;
-  color: var(--color-ink-tertiary);
-  padding: 0 var(--space-2) var(--space-1);
-  text-align: right;
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.india-map__tooltip-table th:first-child { text-align: left; }
-
-.india-map__tooltip-table td {
-  padding: 2px var(--space-2);
-  text-align: right;
-  color: var(--color-ink);
-}
-.india-map__tooltip-table td:first-child {
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-weight: 500;
-}
-
-.india-map__tooltip-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: inline-block;
-}
-.india-map__tooltip-dot--airtel { background: var(--color-airtel); }
-.india-map__tooltip-dot--jio    { background: var(--color-jio); }
-
-.india-map__tooltip-empty {
-  font-size: var(--text-xs);
-  color: var(--color-ink-secondary);
-  margin-bottom: var(--space-2);
-}
-
-.india-map__tooltip-caveat {
-  font-size: 11px;
-  color: var(--color-caution);
-  margin-top: var(--space-2);
-}
-
-.india-map__tooltip-hint {
-  font-size: 10px;
-  color: var(--color-ink-tertiary);
-  margin-top: var(--space-2);
-  font-style: italic;
+@media (max-width: 860px) {
+  .map-card__header { flex-direction: column; }
+  .map-card__legend { justify-content: flex-start; max-width: none; }
+  .map-card__body { padding: 4px 8px 12px; }
 }

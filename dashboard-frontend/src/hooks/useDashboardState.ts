@@ -83,7 +83,7 @@ export function useDashboardState() {
     Promise.all([
       api.getKpis(filters),
       api.getStateQuality(filters),
-      api.getStateConfidence({}),
+      api.getStateConfidence(filters),
       api.getRadar('Airtel' as Operator, filters),
       api.getRadar('Jio' as Operator, filters),
       api.getIndoorOutdoor(filters),

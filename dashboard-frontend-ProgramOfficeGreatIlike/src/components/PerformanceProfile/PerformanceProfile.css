@@ -1,0 +1,92 @@
+/* PerformanceProfile.css */
+.perf-profile {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+.perf-profile__panel {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.perf-profile__panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.perf-profile__title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-1);
+}
+
+.perf-profile__sub {
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+  max-width: 42ch;
+  line-height: 1.5;
+}
+
+.perf-profile__legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.perf-profile__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-ink-secondary);
+  font-weight: 500;
+}
+
+.perf-profile__legend-line {
+  width: 20px;
+  height: 2px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+.perf-profile__legend-item--airtel .perf-profile__legend-line { background: var(--color-airtel); }
+.perf-profile__legend-item--jio    .perf-profile__legend-line { background: var(--color-jio); }
+.perf-profile__legend-line--dashed {
+  background: none;
+  border-top: 2px dashed var(--color-jio);
+}
+
+.perf-profile__empty {
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+  padding: var(--space-8) 0;
+  text-align: center;
+}
+
+.perf-profile__radar-wrap,
+.perf-profile__io-wrap {
+  flex: 1;
+}
+
+.perf-profile__io-note {
+  font-size: var(--text-xs);
+  color: var(--color-ink-tertiary);
+  margin-top: var(--space-3);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .perf-profile {
+    grid-template-columns: 1fr;
+  }
+}
