@@ -1,72 +1,92 @@
 /* src/index.css */
 
 :root {
-  /* Color -- light theme (default) */
-  --color-bg: #f7f7f5;
+  /* Canvas -- a soft warm-neutral, not stark white, so panels can read as
+     "raised" through shadow alone rather than needing a hard border. */
+  --color-bg: #faf9f7;
   --color-panel: #ffffff;
-  --color-panel-recessed: #f1f1ee;
-  --color-ink: #1b1d22;
-  --color-ink-soft: #5a5e68;
-  --color-border: #dcdcd6;
+  --color-panel-recessed: #f2f1ee;
+  --color-ink: #15171c;
+  --color-ink-soft: #6b6f76;
+  --color-ink-faint: #9a9ea5;
+  --color-border: #e7e6e2;
 
-  /* Operator identity colors -- who this is. Never reused as a semantic
-     "good/bad" signal (see below). Vermillion/blue stays distinguishable
-     across protanopia, deuteranopia and tritanopia. */
-  --color-airtel: #d6472b;
-  --color-airtel-soft: #f3d6cf;
-  --color-jio: #1b6fc9;
-  --color-jio-soft: #cfe1f3;
+  /* Operator identity -- who this is. The one place in the app allowed to
+     be loud. Never reused as a semantic good/bad signal. */
+  --color-airtel: #e1502b;
+  --color-airtel-soft: #fbe4dc;
+  --color-jio: #1861d6;
+  --color-jio-soft: #dfe9fb;
 
-  /* Semantic colors -- what an outcome means, independent of who owns it. */
+  /* Semantic -- what an outcome means, independent of who owns it. */
   --color-good: #1e8a4c;
   --color-good-soft: #dceee1;
   --color-warn: #b9791f;
   --color-warn-soft: #f2e2c4;
   --color-bad: #b23b3b;
   --color-bad-soft: #f3d9d9;
-  --color-neutral: #6b7280;
-  --color-neutral-soft: #e4e4e4;
+  --color-neutral: #8b8f96;
+  --color-neutral-soft: #eceeee;
 
-  --color-focus: #1b6fc9;
+  --color-focus: #1861d6;
 
-  /* Type */
-  --font-sans: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif;
+  /* Type -- the system's own display face reads as native and confident
+     rather than "a website pretending to be an app." Tabular numerals for
+     every figure that gets compared. */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter',
+    'Segoe UI', sans-serif;
   --step-1: 0.8125rem;
   --step-0: 0.9375rem;
   --step-2: 1.0625rem;
   --step-3: 1.375rem;
   --step-4: 1.75rem;
+  --step-5: 2.5rem;
+  --step-6: 3.25rem;
 
   /* Layout */
-  --radius-sm: 4px;
-  --radius-md: 8px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --content-width: 1180px;
+
+  --shadow-card: 0 1px 2px rgba(21, 23, 28, 0.04), 0 10px 30px rgba(21, 23, 28, 0.05);
+  --shadow-card-hover: 0 1px 2px rgba(21, 23, 28, 0.05), 0 16px 40px rgba(21, 23, 28, 0.08);
+  --shadow-pop: 0 12px 32px rgba(21, 23, 28, 0.16);
 
   color-scheme: light;
 }
 
+/* Dark theme -- true near-black base with layered elevation (each surface
+   a step lighter than the one under it), the way iOS/macOS dark mode
+   signals depth without borders. */
 [data-theme='dark'] {
-  --color-bg: #12141a;
-  --color-panel: #1a1d26;
-  --color-panel-recessed: #20232e;
-  --color-ink: #eceef2;
-  --color-ink-soft: #9aa1b0;
-  --color-border: #2c303c;
+  --color-bg: #08090b;
+  --color-panel: #151619;
+  --color-panel-recessed: #1c1e22;
+  --color-ink: #f2f2f0;
+  --color-ink-soft: #9a9ca2;
+  --color-ink-faint: #6c6e74;
+  --color-border: #26282d;
 
-  --color-airtel: #ff7a5c;
-  --color-airtel-soft: #402420;
-  --color-jio: #5aa2ff;
-  --color-jio-soft: #1c2c40;
+  --color-airtel: #ff7a56;
+  --color-airtel-soft: #3a231c;
+  --color-jio: #5b9dff;
+  --color-jio-soft: #182a44;
 
   --color-good: #4cbf7f;
-  --color-good-soft: #163326;
+  --color-good-soft: #17301f;
   --color-warn: #d9a441;
-  --color-warn-soft: #382c14;
+  --color-warn-soft: #33280f;
   --color-bad: #e07070;
   --color-bad-soft: #3a1f1f;
-  --color-neutral: #9aa1b0;
-  --color-neutral-soft: #2a2e3a;
+  --color-neutral: #9a9ca2;
+  --color-neutral-soft: #222327;
 
-  --color-focus: #5aa2ff;
+  --color-focus: #5b9dff;
+
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-card-hover: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 44px rgba(0, 0, 0, 0.55);
+  --shadow-pop: 0 16px 40px rgba(0, 0, 0, 0.55);
 
   color-scheme: dark;
 }
@@ -89,15 +109,15 @@ body {
   font-size: var(--step-0);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 h1,
 h2,
 h3 {
   margin: 0;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 650;
+  letter-spacing: -0.015em;
 }
 
 p {
@@ -120,10 +140,10 @@ button {
   font-variant-numeric: tabular-nums;
 }
 
-/* Visible keyboard focus everywhere, never suppressed */
 :focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
 @media (prefers-reduced-motion: reduce) {

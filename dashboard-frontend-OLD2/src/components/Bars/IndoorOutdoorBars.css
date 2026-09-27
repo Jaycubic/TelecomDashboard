@@ -1,0 +1,14 @@
+/* src/components/Bars/IndoorOutdoorBars.css */
+
+.io-bars__note {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+.io-bars__empty {
+  color: var(--color-ink-soft);
+  font-size: var(--step-1);
+  padding: 24px 0;
+  text-align: center;
+}

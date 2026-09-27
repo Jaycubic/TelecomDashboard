@@ -4,9 +4,9 @@
   position: relative;
   width: 100%;
   background: var(--color-panel);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 8px;
 }
 
 .india-map__state {
@@ -46,16 +46,16 @@
   z-index: 5;
   max-width: 220px;
   background: var(--color-ink);
-  color: var(--color-bg);
-  padding: 12px 14px;
+  color: #fff;
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
   font-size: var(--step-1);
   pointer-events: none;
-  box-shadow: var(--shadow-pop);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
 }
 
 .india-map__tooltip-title {
-  font-weight: 650;
+  font-weight: 600;
   margin-bottom: 6px;
 }
 

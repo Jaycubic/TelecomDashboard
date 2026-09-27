@@ -1,0 +1,93 @@
+/* src/components/UtilityBar/UtilityBar.css */
+
+.utility-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 24px;
+  background: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(10px);
+  -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.utility-bar__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--step-1);
+  font-weight: 600;
+  color: var(--color-ink-soft);
+}
+
+.utility-bar__mark-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.utility-bar__mark-dot--airtel {
+  background: var(--color-airtel);
+}
+
+.utility-bar__mark-dot--jio {
+  background: var(--color-jio);
+  margin-right: 4px;
+}
+
+.utility-bar__right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.utility-bar__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--step-1);
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+}
+
+.utility-bar__status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-good);
+  display: inline-block;
+}
+
+.utility-bar__status--loading .utility-bar__status-dot {
+  background: var(--color-ink-faint);
+}
+
+.utility-bar__status--error {
+  color: var(--color-bad);
+  font-weight: 500;
+}
+
+.utility-bar__theme-toggle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-panel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  line-height: 1;
+  color: var(--color-ink-soft);
+  flex-shrink: 0;
+}
+
+.utility-bar__theme-toggle:hover {
+  color: var(--color-ink);
+  border-color: var(--color-ink-faint);
+}
