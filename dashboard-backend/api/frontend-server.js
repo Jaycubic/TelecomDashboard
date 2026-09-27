@@ -14,7 +14,7 @@ const path = require('path');
 const { URL } = require('url');
 
 const PORT = parseInt(process.env.FRONTEND_PORT || '8099', 10);
-const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://192.168.8.10:8094';
+const BACKEND_API_URL = process.env.BACKEND_API_URL || 'http://127.0.0.1:8094';
 
 // Search candidates for the frontend dist directory
 const candidates = [
