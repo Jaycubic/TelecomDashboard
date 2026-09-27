@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { FilterOptionsResponse } from '../../types';
 import type { CarrierVisibility } from '../../hooks/useDashboardState';
 import './FilterBar.css';
@@ -44,10 +44,6 @@ export function FilterBar({
     yearRange[1] !== yearMax ||
     viewMode !== 'compare';
 
-  const years = useMemo(
-    () => Array.from({ length: Math.max(0, yearMax - yearMin + 1) }, (_, i) => yearMin + i),
-    [yearMin, yearMax],
-  );
 
   const setYearModeSafe = (mode: YearMode) => {
     setYearMode(mode);
@@ -177,8 +173,11 @@ export function FilterBar({
             </div>
           )}
           <div className="year-control-hint">
-            {yearMode === 'single' ? 'Check one year at a time; switch years without creating a multi-year average.' : 'Use a period when you want the dashboard to summarize several years together.'}
-            <span className="year-control-available" aria-hidden="true">{years[0]}–{years[years.length - 1]}</span>
+            <span>
+              {yearMode === 'single'
+                ? 'One year'
+                : 'Summarises the selected period'}
+            </span>
           </div>
         </div>
 
