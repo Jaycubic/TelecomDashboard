@@ -1,155 +1,155 @@
-/* src/index.css */
+/* src/index.css — Signal Strength Dashboard */
+/* Typefaces via Google Fonts (loaded in index.html) */
 
 :root {
-  /* Canvas -- a soft warm-neutral, not stark white, so panels can read as
-     "raised" through shadow alone rather than needing a hard border. */
-  --color-bg: #faf9f7;
-  --color-panel: #ffffff;
-  --color-panel-recessed: #f2f1ee;
-  --color-ink: #15171c;
-  --color-ink-soft: #6b6f76;
-  --color-ink-faint: #9a9ea5;
-  --color-border: #e7e6e2;
+  /* === SURFACE SYSTEM === */
+  --color-bg:            #0D1117;
+  --color-surface-1:     #141B27;
+  --color-surface-2:     #1A2332;
+  --color-surface-3:     #202C3D;
+  --color-surface-hover: rgba(255,255,255,0.04);
 
-  /* Operator identity -- who this is. The one place in the app allowed to
-     be loud. Never reused as a semantic good/bad signal. */
-  --color-airtel: #e1502b;
-  --color-airtel-soft: #fbe4dc;
-  --color-jio: #1861d6;
-  --color-jio-soft: #dfe9fb;
+  /* === INK === */
+  --color-ink:           #E8EAF0;
+  --color-ink-secondary: #8B93A8;
+  --color-ink-tertiary:  #5A6175;
+  --color-border:        rgba(255,255,255,0.08);
+  --color-border-strong: rgba(255,255,255,0.14);
 
-  /* Semantic -- what an outcome means, independent of who owns it. */
-  --color-good: #1e8a4c;
-  --color-good-soft: #dceee1;
-  --color-warn: #b9791f;
-  --color-warn-soft: #f2e2c4;
-  --color-bad: #b23b3b;
-  --color-bad-soft: #f3d9d9;
-  --color-neutral: #8b8f96;
-  --color-neutral-soft: #eceeee;
+  /* === OPERATOR IDENTITY === */
+  /* Vermillion-adjacent ember / cobalt — colorblind-safe pair */
+  --color-airtel:        #E8553E;
+  --color-airtel-dim:    rgba(232,85,62,0.15);
+  --color-airtel-mid:    rgba(232,85,62,0.35);
+  --color-jio:           #3D8EF0;
+  --color-jio-dim:       rgba(61,142,240,0.15);
+  --color-jio-mid:       rgba(61,142,240,0.35);
 
-  --color-focus: #1861d6;
+  /* === SEMANTIC (outcome meaning, not operator identity) === */
+  --color-positive:      #34C77A;
+  --color-positive-dim:  rgba(52,199,122,0.12);
+  --color-caution:       #F5A623;
+  --color-caution-dim:   rgba(245,166,35,0.12);
+  --color-negative:      #E85C5C;
+  --color-negative-dim:  rgba(232,92,92,0.12);
+  --color-neutral:       #5A6175;
+  --color-neutral-dim:   rgba(90,97,117,0.12);
 
-  /* Type -- the system's own display face reads as native and confident
-     rather than "a website pretending to be an app." Tabular numerals for
-     every figure that gets compared. */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter',
-    'Segoe UI', sans-serif;
-  --step-1: 0.8125rem;
-  --step-0: 0.9375rem;
-  --step-2: 1.0625rem;
-  --step-3: 1.375rem;
-  --step-4: 1.75rem;
-  --step-5: 2.5rem;
-  --step-6: 3.25rem;
+  --color-tie:           #4A5568;
 
-  /* Layout */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --content-width: 1180px;
+  /* === FOCUS === */
+  --color-focus:         #3D8EF0;
 
-  --shadow-card: 0 1px 2px rgba(21, 23, 28, 0.04), 0 10px 30px rgba(21, 23, 28, 0.05);
-  --shadow-card-hover: 0 1px 2px rgba(21, 23, 28, 0.05), 0 16px 40px rgba(21, 23, 28, 0.08);
-  --shadow-pop: 0 12px 32px rgba(21, 23, 28, 0.16);
+  /* === TYPOGRAPHY === */
+  --font-display:  'DM Serif Display', Georgia, serif;
+  --font-body:     'Inter', -apple-system, 'Segoe UI', sans-serif;
 
-  color-scheme: light;
-}
+  /* Type scale — minor third */
+  --text-xs:   0.72rem;
+  --text-sm:   0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md:   1.0625rem;
+  --text-lg:   1.3125rem;
+  --text-xl:   1.625rem;
+  --text-2xl:  2rem;
+  --text-3xl:  2.625rem;
+  --text-hero: 3.5rem;
 
-/* Dark theme -- true near-black base with layered elevation (each surface
-   a step lighter than the one under it), the way iOS/macOS dark mode
-   signals depth without borders. */
-[data-theme='dark'] {
-  --color-bg: #08090b;
-  --color-panel: #151619;
-  --color-panel-recessed: #1c1e22;
-  --color-ink: #f2f2f0;
-  --color-ink-soft: #9a9ca2;
-  --color-ink-faint: #6c6e74;
-  --color-border: #26282d;
+  /* === RADIUS === */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
-  --color-airtel: #ff7a56;
-  --color-airtel-soft: #3a231c;
-  --color-jio: #5b9dff;
-  --color-jio-soft: #182a44;
+  /* === SPACING === */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
 
-  --color-good: #4cbf7f;
-  --color-good-soft: #17301f;
-  --color-warn: #d9a441;
-  --color-warn-soft: #33280f;
-  --color-bad: #e07070;
-  --color-bad-soft: #3a1f1f;
-  --color-neutral: #9a9ca2;
-  --color-neutral-soft: #222327;
-
-  --color-focus: #5b9dff;
-
-  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 10px 30px rgba(0, 0, 0, 0.45);
-  --shadow-card-hover: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 44px rgba(0, 0, 0, 0.55);
-  --shadow-pop: 0 16px 40px rgba(0, 0, 0, 0.55);
+  /* === ELEVATION === */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
 
   color-scheme: dark;
 }
 
-* {
-  box-sizing: border-box;
+/* Light theme override — minimal, professional */
+[data-theme='light'] {
+  --color-bg:            #F2F4F8;
+  --color-surface-1:     #FFFFFF;
+  --color-surface-2:     #F7F8FB;
+  --color-surface-3:     #EEF0F5;
+  --color-surface-hover: rgba(0,0,0,0.03);
+
+  --color-ink:           #111827;
+  --color-ink-secondary: #4B5563;
+  --color-ink-tertiary:  #9CA3AF;
+  --color-border:        rgba(0,0,0,0.08);
+  --color-border-strong: rgba(0,0,0,0.14);
+
+  --color-airtel:        #C93F28;
+  --color-airtel-dim:    rgba(201,63,40,0.10);
+  --color-airtel-mid:    rgba(201,63,40,0.25);
+  --color-jio:           #1B6FC9;
+  --color-jio-dim:       rgba(27,111,201,0.10);
+  --color-jio-mid:       rgba(27,111,201,0.25);
+
+  --color-positive:      #1A8C52;
+  --color-caution:       #B87A18;
+  --color-negative:      #B23B3B;
+  --color-neutral:       #6B7280;
+  --color-tie:           #9CA3AF;
+
+  color-scheme: light;
 }
 
-html,
-body,
-#root {
-  height: 100%;
-}
+/* === RESET === */
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
 
 body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-ink);
-  font-family: var(--font-sans);
-  font-size: var(--step-0);
-  line-height: 1.45;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-h1,
-h2,
-h3 {
-  margin: 0;
-  font-weight: 650;
-  letter-spacing: -0.015em;
-}
+h1, h2, h3, h4 { margin: 0; letter-spacing: -0.02em; }
 
-p {
-  margin: 0;
-}
+p { margin: 0; }
 
-button,
-select,
-input {
+button, select, input {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
 }
 
-button {
-  cursor: pointer;
-}
+button { cursor: pointer; }
 
-.tabular {
-  font-variant-numeric: tabular-nums;
-}
+/* Tabular numbers for data */
+.tabular { font-variant-numeric: tabular-nums; }
 
+/* Keyboard focus */
 :focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
@@ -157,13 +157,18 @@ button {
 }
 
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+  position: absolute; width: 1px; height: 1px; padding: 0;
+  margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
+  white-space: nowrap; border: 0;
+}
+
+/* Operator accent classes */
+.airtel { color: var(--color-airtel); }
+.jio    { color: var(--color-jio);    }
+
+/* Divider */
+.divider {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin: 0;
 }

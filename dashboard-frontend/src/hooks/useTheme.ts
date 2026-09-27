@@ -1,35 +1,26 @@
 // src/hooks/useTheme.ts
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type ThemeMode = 'light' | 'dark';
 
-const STORAGE_KEY = 'callquality:theme';
-
-function getPreferredTheme(): ThemeMode {
-  if (typeof window === 'undefined') return 'light';
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  if (stored === 'light' || stored === 'dark') return stored;
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
-/** Persisted light/dark preference, applied via a data-theme attribute on
- *  <html> so plain CSS variables handle almost everything; components that
- *  hand raw color strings to SVG/recharts read `theme` directly. */
 export function useTheme() {
-  const [theme, setTheme] = useState<ThemeMode>(getPreferredTheme);
+  const [theme, setTheme] = useState<ThemeMode>(() => {
+    // Check localStorage first, default to dark for this premium product
+    const stored = typeof window !== 'undefined' ? localStorage.getItem('signal-theme') : null;
+    if (stored === 'light' || stored === 'dark') return stored;
+    // Respect system preference, default to dark if no preference
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      return 'light';
+    }
+    return 'dark';
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, theme);
-    } catch {
-      // private browsing / storage disabled -- theme just won't persist
-    }
+    localStorage.setItem('signal-theme', theme);
   }, [theme]);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((t) => (t === 'light' ? 'dark' : 'light'));
-  }, []);
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
   return { theme, toggleTheme };
 }

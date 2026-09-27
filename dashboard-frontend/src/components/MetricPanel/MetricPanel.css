@@ -1,0 +1,195 @@
+/* MetricPanel.css */
+.metric-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.metric-panel--empty {
+  padding: var(--space-6);
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  color: var(--color-ink-secondary);
+  font-size: var(--text-sm);
+}
+
+.metric-panel__heading {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-tertiary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0 2px;
+}
+
+/* Metric card */
+.metric-card {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  transition: border-color 0.15s;
+}
+
+.metric-card:hover {
+  border-color: var(--color-border-strong);
+}
+
+.metric-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.metric-card__label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-ink);
+  margin-bottom: 2px;
+}
+
+.metric-card__desc {
+  font-size: var(--text-xs);
+  color: var(--color-ink-tertiary);
+  line-height: 1.4;
+}
+
+.metric-card__badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 100px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.metric-card__badge--airtel {
+  background: var(--color-airtel-dim);
+  color: var(--color-airtel);
+}
+.metric-card__badge--jio {
+  background: var(--color-jio-dim);
+  color: var(--color-jio);
+}
+.metric-card__badge--tie {
+  background: var(--color-surface-3);
+  color: var(--color-ink-tertiary);
+}
+
+.metric-card__vals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Bar row */
+.metric-bar {
+  opacity: 0.72;
+  transition: opacity 0.15s;
+}
+.metric-bar--winner { opacity: 1; }
+
+.metric-bar__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.metric-bar__operator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--text-xs);
+  color: var(--color-ink-secondary);
+  font-weight: 500;
+}
+
+.metric-bar__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+.metric-bar__dot--airtel { background: var(--color-airtel); }
+.metric-bar__dot--jio    { background: var(--color-jio); }
+
+.metric-bar__value {
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.metric-bar__track {
+  height: 4px;
+  background: var(--color-surface-3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.metric-bar__fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.metric-bar__fill--airtel { background: var(--color-airtel); opacity: 0.8; }
+.metric-bar__fill--jio    { background: var(--color-jio);    opacity: 0.8; }
+
+/* Indoor mini */
+.indoor-mini {
+  background: var(--color-surface-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.indoor-mini__heading {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-ink-tertiary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-3);
+}
+
+.indoor-mini__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.indoor-mini__cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.indoor-mini__cell-label {
+  font-size: var(--text-xs);
+  color: var(--color-ink-tertiary);
+  font-weight: 500;
+  margin-bottom: var(--space-1);
+}
+
+.indoor-mini__cell-val {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--text-sm);
+  color: var(--color-ink-secondary);
+  font-weight: 400;
+}
+
+.indoor-mini__cell-val--winner-airtel {
+  color: var(--color-airtel);
+  font-weight: 600;
+}
+.indoor-mini__cell-val--winner-jio {
+  color: var(--color-jio);
+  font-weight: 600;
+}

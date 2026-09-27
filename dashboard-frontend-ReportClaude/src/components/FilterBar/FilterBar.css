@@ -1,0 +1,147 @@
+/* src/components/FilterBar/FilterBar.css */
+/* Restyled as a quiet inline control row rather than a bordered bar --
+   filters are a tool you reach for, not a section of content, so they
+   shouldn't carry the same visual weight as the scorecards or the map. */
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
+}
+
+.filter-bar__group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.filter-bar__label {
+  font-size: var(--step-1);
+  font-weight: 600;
+  color: var(--color-ink-faint);
+}
+
+.filter-bar__compare {
+  display: flex;
+  gap: 2px;
+  background: var(--color-panel-recessed);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.filter-bar__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  color: var(--color-ink-soft);
+  font-size: var(--step-1);
+  padding: 6px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filter-bar__chip--active {
+  background: var(--color-panel);
+  color: var(--color-ink);
+  font-weight: 600;
+  box-shadow: var(--shadow-card);
+}
+
+.filter-bar__chip-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.filter-bar__chip-swatch--dashed {
+  border-radius: 2px;
+}
+
+.filter-bar__select {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-panel);
+  color: var(--color-ink);
+}
+
+.filter-bar__summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 4px;
+}
+
+.filter-bar__summary::-webkit-details-marker {
+  display: none;
+}
+
+.filter-bar__summary-value {
+  font-size: var(--step-1);
+  color: var(--color-ink);
+  background: var(--color-panel-recessed);
+  padding: 5px 11px;
+  border-radius: 999px;
+}
+
+.filter-bar__popover-body {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 10;
+  background: var(--color-panel);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  width: 220px;
+  box-shadow: var(--shadow-pop);
+}
+
+.filter-bar__range-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-bar__range-group input[type='range'] {
+  width: 100%;
+  accent-color: var(--color-jio);
+}
+
+.filter-bar__range-endpoints {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--step-1);
+  color: var(--color-ink-soft);
+  margin-top: 8px;
+}
+
+.filter-bar__reset {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--color-ink-faint);
+  font-size: var(--step-1);
+  padding: 0;
+  cursor: pointer;
+}
+
+.filter-bar__reset:hover {
+  color: var(--color-ink-soft);
+}
+
+@media (max-width: 720px) {
+  .filter-bar {
+    gap: 14px;
+  }
+  .filter-bar__reset {
+    margin-left: 0;
+  }
+}

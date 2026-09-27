@@ -1,0 +1,94 @@
+/* src/components/Map/IndiaMap.css */
+
+.india-map {
+  position: relative;
+  width: 100%;
+  background: var(--color-panel);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 12px;
+}
+
+.india-map__state {
+  cursor: pointer;
+  transition: fill-opacity 0.15s ease, stroke-width 0.15s ease;
+}
+
+.india-map__state:hover {
+  fill-opacity: 1 !important;
+}
+
+.india-map__state:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+/* the one deliberate motion moment: states draw their outline in once,
+   the first time real data arrives -- not replayed on every filter change */
+.india-map__state--drawn {
+  animation: india-map-draw-in 900ms ease-out both;
+}
+
+@keyframes india-map-draw-in {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+    transform-origin: center;
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.india-map__tooltip {
+  position: absolute;
+  z-index: 5;
+  max-width: 220px;
+  background: var(--color-ink);
+  color: var(--color-bg);
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-size: var(--step-1);
+  pointer-events: none;
+  box-shadow: var(--shadow-pop);
+}
+
+.india-map__tooltip-title {
+  font-weight: 650;
+  margin-bottom: 6px;
+}
+
+.india-map__tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.india-map__tooltip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.india-map__tooltip-dot--Airtel {
+  background: var(--color-airtel);
+}
+
+.india-map__tooltip-dot--Jio {
+  background: var(--color-jio);
+}
+
+.india-map__tooltip-caveat {
+  margin-top: 6px;
+  color: var(--color-warn);
+  font-size: 0.75rem;
+}
+
+.india-map__tooltip-hint {
+  margin-top: 6px;
+  opacity: 0.7;
+  font-size: 0.72rem;
+}
