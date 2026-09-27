@@ -33,6 +33,7 @@ out/
 .turbo/
 .parcel-cache/
 .cache/
+*.tsbuildinfo
 
 # ---------------------------------------------------------------------
 # Python & Ingestion
@@ -48,8 +49,10 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
+!**/src/lib/
+!**/src/lib/**
 parts/
 sdist/
 var/
@@ -78,6 +81,8 @@ pnpm-debug.log*
 
 # Raw bulk data files / CSV exports (~1.5M rows)
 data/
+!**/src/data/
+!**/src/data/**
 
 
 # ---------------------------------------------------------------------

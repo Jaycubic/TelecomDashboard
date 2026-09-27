@@ -27,3 +27,9 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Source folders
+!src/lib/
+!src/lib/**
+!src/data/
+!src/data/**
