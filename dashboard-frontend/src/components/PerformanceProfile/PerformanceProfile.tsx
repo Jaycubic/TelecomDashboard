@@ -18,12 +18,12 @@ export function PerformanceProfile({ indoorOutdoor, carrierVisibility }: Perform
         <div>
           <div className="section-kicker">Call setting</div>
           <h2>How does reported call quality vary by setting?</h2>
-          <p>Share of customer reports rated satisfactory when the call was made indoors, outdoors, or while travelling.</p>
+          <p>Share of customer reports rated satisfactory when the call was made indoors or outdoors.</p>
         </div>
         {bothVisible && <div className="context-panel__legend"><span><i className="legend-dot legend-dot--jio" /> Jio</span><span><i className="legend-dot legend-dot--airtel" /> Airtel</span></div>}
       </div>
 
-      <div className="grouped-chart" role="img" aria-label="Grouped bar chart comparing the share of customer reports rated satisfactory indoors, outdoors, and while travelling">
+      <div className="grouped-chart" role="img" aria-label="Grouped bar chart comparing the share of customer reports rated satisfactory indoors and outdoors">
         {rows.map((row) => {
           const a = row.airtel ?? 0;
           const j = row.jio ?? 0;

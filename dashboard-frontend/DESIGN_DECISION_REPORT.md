@@ -26,7 +26,7 @@ The first row combines the three core API metrics. They answer **what is being r
 The map is intentionally larger than the supporting charts. In comparison mode it answers the geographic comparison question; in single-network mode it switches to a rating-intensity view for the selected operator.
 
 ### Fourth: supporting dimensions
-The voice-quality profile and indoor/outdoor/travelling breakdown are presented after the geographic story because they explain the pattern rather than replace the primary geographic question.
+The voice-quality profile and indoor/outdoor breakdown are presented after the geographic story because they explain the pattern rather than replace the primary geographic question.
 
 ### Fifth: caveats and provenance
 The About view makes clear what the data represents, what cannot be concluded from customer reports, and where the displayed data came from.
@@ -58,7 +58,7 @@ A radar chart is retained as a compact secondary view for six reported measures:
 **Why:** It provides a quick shape-level comparison after the user already understands the exact primary metrics and map. The surrounding text explicitly names the measures and the common 0–100 visual scale so the chart is not left to interpretation alone.
 
 ### Call-setting context
-Satisfactory-call reporting is shown for Indoor, Outdoor, and Travelling using grouped bars.
+Satisfactory-call reporting is shown for Indoor and Outdoor using grouped bars.
 
 **Why:** The context values share a 0–100% scale, so aligned bars support direct comparison while using less space than another complex multi-axis visualization.
 

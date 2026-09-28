@@ -122,7 +122,7 @@ export function buildStateGaps(rows: StateQualityRow[]): StateGap[] {
 }
 
 export interface ContextRow {
-  inout: 'Indoor' | 'Outdoor' | 'Travelling';
+  inout: 'Indoor' | 'Outdoor';
   airtel: number | null;
   jio: number | null;
   gap: number | null;
@@ -131,7 +131,7 @@ export interface ContextRow {
 
 export function buildContextRows(data: IndoorOutdoorResponse | null): ContextRow[] {
   const rows = data?.breakdown ?? [];
-  const order: ContextRow['inout'][] = ['Indoor', 'Outdoor', 'Travelling'];
+  const order: ContextRow['inout'][] = ['Indoor', 'Outdoor'];
   return order
     .map((inout) => {
       const a = rows.find((row) => row.inout === inout && row.operator === 'Airtel');
