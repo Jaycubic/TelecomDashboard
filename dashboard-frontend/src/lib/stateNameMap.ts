@@ -1,56 +1,69 @@
-// src/lib/stateNameMap.ts
-//
-// The Airtel/Jio sheets and the DataMeet GeoJSON don't spell every state
-// the same way (confirmed directly: the Jio sample uses "NCT" for Delhi,
-// the GeoJSON calls it "NCT of Delhi"). This maps every dataset spelling
-// we've seen (plus the common variants worth guarding against) to the
-// canonical `ST_NM` value used in src/data/india-states-topo.json.
-//
-// If you load your full dataset and a state stops appearing on the map,
-// it means a spelling here doesn't match -- check ingestion/unmapped_states.log's
-// sibling problem (this is the same class of issue, just for the map join
-// instead of the region lookup) and add the missing variant below rather
-// than silently dropping the state.
+// Canonical names shared by the official location filter, the map geometry,
+// and the legacy spellings found in the supplied Airtel/Jio datasets.
 
-export const DATASET_TO_GEOJSON_STATE_NAME: Record<string, string> = {
-  'nct': 'NCT of Delhi',
-  'delhi': 'NCT of Delhi',
-  'nct of delhi': 'NCT of Delhi',
-  'new delhi': 'NCT of Delhi',
-
-  'orissa': 'Odisha',
-  'odisha': 'Odisha',
-
-  'pondicherry': 'Puducherry',
-  'puducherry': 'Puducherry',
-
-  'uttaranchal': 'Uttarakhand',
-  'uttarakhand': 'Uttarakhand',
-
-  'jammu and kashmir': 'Jammu & Kashmir',
-  'jammu & kashmir': 'Jammu & Kashmir',
-  'j&k': 'Jammu & Kashmir',
-
-  'andaman and nicobar islands': 'Andaman & Nicobar Island',
-  'andaman & nicobar islands': 'Andaman & Nicobar Island',
-  'andaman and nicobar': 'Andaman & Nicobar Island',
-
-  'dadra and nagar haveli': 'Dadara & Nagar Havelli',
-  'dadra & nagar haveli': 'Dadara & Nagar Havelli',
-  'dadra and nagar haveli and daman and diu': 'Dadara & Nagar Havelli',
-
-  'daman and diu': 'Daman & Diu',
-  'daman & diu': 'Daman & Diu',
-
-  'arunachal pradesh': 'Arunanchal Pradesh', // GeoJSON has this typo upstream in DataMeet's source
+const CANONICAL_BY_KEY: Record<string, string> = {
+  'andaman & nicobar island': 'Andaman and Nicobar Islands',
+  'andaman & nicobar islands': 'Andaman and Nicobar Islands',
+  'andaman and nicobar': 'Andaman and Nicobar Islands',
+  'andaman and nicobar islands': 'Andaman and Nicobar Islands',
+  'andhra pradesh': 'Andhra Pradesh',
+  'arunanchal pradesh': 'Arunachal Pradesh',
+  'arunachal pradesh': 'Arunachal Pradesh',
+  assam: 'Assam',
+  bihar: 'Bihar',
+  chandigarh: 'Chandigarh',
+  chhattisgarh: 'Chhattisgarh',
+  'dadara & nagar havelli': 'Dadra and Nagar Haveli and Daman and Diu',
+  'dadra & nagar haveli': 'Dadra and Nagar Haveli and Daman and Diu',
+  'dadra and nagar haveli': 'Dadra and Nagar Haveli and Daman and Diu',
+  'dadra and nagar haveli and daman and diu': 'Dadra and Nagar Haveli and Daman and Diu',
+  'daman & diu': 'Dadra and Nagar Haveli and Daman and Diu',
+  'daman and diu': 'Dadra and Nagar Haveli and Daman and Diu',
+  delhi: 'Delhi',
+  'nct': 'Delhi',
+  'nct of delhi': 'Delhi',
+  'new delhi': 'Delhi',
+  goa: 'Goa',
+  gujarat: 'Gujarat',
+  haryana: 'Haryana',
+  'himachal pradesh': 'Himachal Pradesh',
+  'jammu & kashmir': 'Jammu and Kashmir',
+  'jammu and kashmir': 'Jammu and Kashmir',
+  'j&k': 'Jammu and Kashmir',
+  kashmir: 'Jammu and Kashmir',
+  jharkhand: 'Jharkhand',
+  karnataka: 'Karnataka',
+  kerala: 'Kerala',
+  ladakh: 'Ladakh',
+  lakshadweep: 'Lakshadweep',
+  madhya pradesh: 'Madhya Pradesh',
+  maharashtra: 'Maharashtra',
+  manipur: 'Manipur',
+  meghalaya: 'Meghalaya',
+  mizoram: 'Mizoram',
+  nagaland: 'Nagaland',
+  odisha: 'Odisha',
+  orissa: 'Odisha',
+  pondicherry: 'Puducherry',
+  puducherry: 'Puducherry',
+  punjab: 'Punjab',
+  rajasthan: 'Rajasthan',
+  sikkim: 'Sikkim',
+  'tamil nadu': 'Tamil Nadu',
+  telangana: 'Telangana',
+  tripura: 'Tripura',
+  'uttar pradesh': 'Uttar Pradesh',
+  uttaranchal: 'Uttarakhand',
+  uttarakhand: 'Uttarakhand',
+  'west bengal': 'West Bengal',
 };
 
-/**
- * Look up the canonical GeoJSON ST_NM for a raw dataset state_name.
- * Falls back to the input unchanged if it already matches a GeoJSON name
- * (most states, e.g. "Karnataka", need no translation at all).
- */
+export function normalizeAreaName(raw: string): string {
+  const key = raw.trim().toLowerCase().replace(/\s+/g, ' ');
+  return CANONICAL_BY_KEY[key] ?? raw.trim();
+}
+
+// Kept as a compatibility export for existing imports.
 export function toGeoJsonStateName(rawStateName: string): string {
-  const key = rawStateName.trim().toLowerCase();
-  return DATASET_TO_GEOJSON_STATE_NAME[key] ?? rawStateName.trim();
+  return normalizeAreaName(rawStateName);
 }

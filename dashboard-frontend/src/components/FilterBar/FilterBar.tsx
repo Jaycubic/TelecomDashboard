@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { FilterOptionsResponse } from '../../types';
-import type { CarrierVisibility } from '../../hooks/useDashboardState';
+import { InfoPopover } from '../InfoPopover/InfoPopover';
 import './FilterBar.css';
 
 interface FilterBarProps {
@@ -8,254 +8,131 @@ interface FilterBarProps {
   onStateChange: (state: string | undefined) => void;
   yearRange: [number, number];
   onYearRangeChange: (range: [number, number]) => void;
-  carrierVisibility: CarrierVisibility;
-  onCarrierVisibilityChange: (visibility: CarrierVisibility) => void;
   filterOptions: FilterOptionsResponse | null;
-  embedded?: boolean;
 }
 
-type ViewMode = 'compare' | 'Airtel' | 'Jio';
-type YearMode = 'single' | 'period';
+const fallbackStates = [
+  'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh',
+  'Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha',
+  'Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
+];
+const fallbackUts = ['Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu','Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'];
 
-export function FilterBar({
-  selectedState,
-  onStateChange,
-  yearRange,
-  onYearRangeChange,
-  carrierVisibility,
-  onCarrierVisibilityChange,
-  filterOptions,
-  embedded = false,
-}: FilterBarProps) {
-  const yearMin = filterOptions?.year_min ?? 2021;
-  const yearMax = filterOptions?.year_max ?? 2025;
-  const [yearMode, setYearMode] = useState<YearMode>(yearRange[0] === yearRange[1] ? 'single' : 'period');
+export function FilterBar({ selectedState, onStateChange, yearRange, onYearRangeChange, filterOptions }: FilterBarProps) {
+  const stateOptions = filterOptions?.states?.length ? filterOptions.states : fallbackStates;
+  const unionTerritories = filterOptions?.union_territories?.length ? filterOptions.union_territories : fallbackUts;
+  const minYear = filterOptions?.year_min ?? 2017;
+  const maxYear = filterOptions?.year_max ?? 2025;
+  const low = Math.max(minYear, Math.min(maxYear, Math.min(yearRange[0], yearRange[1])));
+  const high = Math.max(minYear, Math.min(maxYear, Math.max(yearRange[0], yearRange[1])));
+  const selectedLabel = low === high ? String(low) : `${low}–${high}`;
 
-  const viewMode: ViewMode =
-    carrierVisibility.Airtel && carrierVisibility.Jio ? 'compare' :
-    carrierVisibility.Airtel ? 'Airtel' : 'Jio';
-
-  const isFiltered =
-    selectedState !== undefined ||
-    yearRange[0] !== yearMin ||
-    yearRange[1] !== yearMax ||
-    viewMode !== 'compare';
-
-  const years = useMemo(
-    () => Array.from({ length: Math.max(0, yearMax - yearMin + 1) }, (_, i) => yearMin + i),
-    [yearMin, yearMax],
-  );
-
-  const setYearModeSafe = (mode: YearMode) => {
-    setYearMode(mode);
-    if (mode === 'single') {
-      const current = yearRange[1] || yearMax;
-      onYearRangeChange([current, current]);
-    } else {
-      onYearRangeChange([yearMin, yearMax]);
-    }
-  };
-
-  const resetAll = () => {
-    onStateChange(undefined);
-    onYearRangeChange([yearMin, yearMax]);
-    setYearMode('period');
-    onCarrierVisibilityChange({ Airtel: true, Jio: true });
-  };
-
-  const updateRange = (nextStart: number, nextEnd: number) => {
-    if (nextStart <= nextEnd) onYearRangeChange([nextStart, nextEnd]);
-    else onYearRangeChange([nextEnd, nextStart]);
-  };
+  const setStart = (value: number) => onYearRangeChange([Math.min(value, high), high]);
+  const setEnd = (value: number) => onYearRangeChange([low, Math.max(value, low)]);
 
   return (
-    <div className={`filterbar ${embedded ? 'filterbar--embedded' : ''}`} role="region" aria-label="Dashboard filters">
-      <div className="filterbar__inner">
-        <StateSelect
-          selectedState={selectedState}
-          states={filterOptions?.states ?? []}
-          onStateChange={onStateChange}
+    <div className="filterbar" aria-label="Filters">
+      <div className="filterbar__location">
+        <LocationSelect
+          value={selectedState}
+          states={stateOptions}
+          unionTerritories={unionTerritories}
+          onChange={onStateChange}
         />
-
-        <div className="filterbar__field filterbar__field--years">
-          <div className="filterbar__years-head">
-            <span className="filterbar__eyebrow">Years</span>
-            <div className="year-mode" role="group" aria-label="Choose year filtering mode">
-              <button type="button" className={yearMode === 'single' ? 'is-active' : ''} onClick={() => setYearModeSafe('single')}>Single year</button>
-              <button type="button" className={yearMode === 'period' ? 'is-active' : ''} onClick={() => setYearModeSafe('period')}>Period</button>
-            </div>
-          </div>
-
-          {yearMode === 'single' ? (
-            <div className="single-year-control">
-              <input
-                type="range"
-                min={yearMin}
-                max={yearMax}
-                step={1}
-                value={yearRange[0]}
-                aria-label="Select a single year"
-                onChange={(e) => {
-                  const year = Number(e.target.value);
-                  onYearRangeChange([year, year]);
-                }}
-              />
-              <output>{yearRange[0]}</output>
-            </div>
-          ) : (
-            <div className="range-year-control">
-              <div className="range-year-values">
-                <output>{yearRange[0]}</output>
-                <span>to</span>
-                <output>{yearRange[1]}</output>
-              </div>
-              <div className="range-year-track">
-                <div
-                  className="range-year-track__fill"
-                  style={{
-                    left: `${((yearRange[0] - yearMin) / Math.max(1, yearMax - yearMin)) * 100}%`,
-                    right: `${((yearMax - yearRange[1]) / Math.max(1, yearMax - yearMin)) * 100}%`,
-                  }}
-                />
-                <input
-                  type="range"
-                  min={yearMin}
-                  max={yearMax}
-                  step={1}
-                  value={yearRange[0]}
-                  aria-label="Start year"
-                  onChange={(e) => updateRange(Number(e.target.value), yearRange[1])}
-                />
-                <input
-                  type="range"
-                  min={yearMin}
-                  max={yearMax}
-                  step={1}
-                  value={yearRange[1]}
-                  aria-label="End year"
-                  onChange={(e) => updateRange(yearRange[0], Number(e.target.value))}
-                />
-              </div>
-            </div>
-          )}
-          <div className="year-control-hint">
-            <span>{yearMode === 'single' ? 'Single year' : 'Selected period'}</span>
-            <span className="year-control-available" aria-hidden="true">{years[0]}–{years[years.length - 1]}</span>
-          </div>
-        </div>
-
-        <button type="button" className="filterbar__reset" onClick={resetAll} disabled={!isFiltered}>Reset</button>
       </div>
+      <div className="filterbar__years">
+        <div className="year-slider__head">
+          <span className="year-slider__current">{selectedLabel}</span>
+          <InfoPopover label="How to use the year slider">
+            <p className="info-popover__title">Timeline</p>
+            <p><strong>One year:</strong> place both handles on the same year. The trend below uses monthly source records for that year.</p>
+            <p><strong>Several years:</strong> separate the handles. The trend summarizes each year in the selected period.</p>
+            <p className="info-popover__note">A year with no recorded reviews is shown as blank in the trend; it is not treated as zero.</p>
+          </InfoPopover>
+        </div>
+        <div className="year-slider" style={{ '--start': `${((low - minYear) / Math.max(1, maxYear - minYear)) * 100}%`, '--end': `${((high - minYear) / Math.max(1, maxYear - minYear)) * 100}%` } as CSSProperties}>
+          <div className="year-slider__track" aria-hidden="true"><span /></div>
+          <input
+            className="year-slider__input year-slider__input--min"
+            type="range"
+            min={minYear}
+            max={maxYear}
+            step={1}
+            value={low}
+            aria-label="Start year"
+            onChange={(event) => setStart(Number(event.target.value))}
+          />
+          <input
+            className="year-slider__input year-slider__input--max"
+            type="range"
+            min={minYear}
+            max={maxYear}
+            step={1}
+            value={high}
+            aria-label="End year"
+            onChange={(event) => setEnd(Number(event.target.value))}
+          />
+        </div>
+        <div className="year-slider__ends"><span>{minYear}</span><span>{maxYear}</span></div>
+      </div>
+      <button
+        type="button"
+        className="filterbar__reset"
+        aria-label="Reset location and timeline filters"
+        title="Reset filters"
+        disabled={!selectedState && low === minYear && high === maxYear}
+        onClick={() => { onStateChange(undefined); onYearRangeChange([minYear, maxYear]); }}
+      >×</button>
     </div>
   );
 }
 
-function StateSelect({
-  selectedState,
-  states,
-  onStateChange,
-}: {
-  selectedState: string | undefined;
-  states: string[];
-  onStateChange: (state: string | undefined) => void;
-}) {
+function LocationSelect({ value, states, unionTerritories, onChange }: { value?: string; states: string[]; unionTerritories: string[]; onChange: (value: string | undefined) => void }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
-  const containerRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const options = useMemo(() => ['All India', ...states.filter((state) => state !== 'All India')], [states]);
-  const filteredOptions = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return options;
-    return options.filter((option) => option.toLowerCase().includes(normalized));
-  }, [options, query]);
-
-  const displayValue = selectedState ?? 'All India';
+  const displayValue = value ?? 'All India';
+  const normalize = (s: string) => s.toLowerCase().includes(query.trim().toLowerCase());
+  const filteredStates = useMemo(() => states.filter(normalize), [states, query]);
+  const filteredUts = useMemo(() => unionTerritories.filter(normalize), [unionTerritories, query]);
 
   useEffect(() => {
     if (!open) return;
-    const handlePointerDown = (event: MouseEvent) => {
-      if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
-        setQuery('');
-      }
-    };
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setOpen(false);
-        setQuery('');
-      }
-    };
-    document.addEventListener('mousedown', handlePointerDown);
-    document.addEventListener('keydown', handleKeyDown);
-    window.requestAnimationFrame(() => inputRef.current?.focus());
-    return () => {
-      document.removeEventListener('mousedown', handlePointerDown);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
+    const onPointer = (event: MouseEvent) => { if (!rootRef.current?.contains(event.target as Node)) setOpen(false); };
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onPointer);
+    document.addEventListener('keydown', onKey);
+    inputRef.current?.focus();
+    return () => { document.removeEventListener('mousedown', onPointer); document.removeEventListener('keydown', onKey); };
   }, [open]);
 
-  const choose = (value: string) => {
-    onStateChange(value === 'All India' ? undefined : value);
-    setOpen(false);
-    setQuery('');
-  };
+  const choose = (name: string | undefined) => { onChange(name); setOpen(false); setQuery(''); };
 
   return (
-    <div className="filterbar__field filterbar__field--state">
-      <span className="filterbar__eyebrow">State</span>
-      <div className={`state-select ${open ? 'is-open' : ''}`} ref={containerRef}>
-        <button
-          type="button"
-          className="state-select__trigger"
-          aria-haspopup="listbox"
-          aria-expanded={open}
-          onClick={() => {
-            setOpen((value) => !value);
-            setQuery('');
-          }}
-        >
-          <span>{displayValue}</span>
-          <span className="state-select__chevron" aria-hidden="true" />
-        </button>
-        {open && (
-          <div className="state-select__menu" role="listbox" aria-label="Choose a state">
-            <div className="state-select__search-wrap">
-              <input
-                ref={inputRef}
-                className="state-select__search"
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search states"
-                aria-label="Search states"
-                autoComplete="off"
-              />
-            </div>
-            <div className="state-select__options">
-              {filteredOptions.length ? filteredOptions.map((option) => {
-                const active = option === displayValue;
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    className={`state-select__option ${active ? 'is-active' : ''}`}
-                    role="option"
-                    aria-selected={active}
-                    onClick={() => choose(option)}
-                  >
-                    <span>{option}</span>
-                    {active && <span className="state-select__check" aria-hidden="true">✓</span>}
-                  </button>
-                );
-              }) : (
-                <div className="state-select__empty">No states found.</div>
-              )}
-            </div>
+    <div className={`state-select ${open ? 'is-open' : ''}`} ref={rootRef}>
+      <button type="button" className="state-select__trigger" aria-haspopup="listbox" aria-expanded={open} onClick={() => { setOpen((v) => !v); setQuery(''); }}>
+        <span>{displayValue}</span><span className="state-select__chevron" aria-hidden="true" />
+      </button>
+      {open && (
+        <div className="state-select__menu" role="listbox" aria-label="Choose a state or union territory">
+          <div className="state-select__search-wrap">
+            <input ref={inputRef} className="state-select__search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search states or union territories" aria-label="Search states or union territories" autoComplete="off" />
           </div>
-        )}
-      </div>
+          <div className="state-select__options">
+            <button type="button" className={`state-select__option ${!value ? 'is-active' : ''}`} role="option" aria-selected={!value} onClick={() => choose(undefined)}><span>All India</span>{!value && <span className="state-select__check">✓</span>}</button>
+            {filteredStates.length > 0 && <div className="state-select__group-label">States</div>}
+            {filteredStates.map((name) => <Option key={name} name={name} active={value === name} onChoose={choose} />)}
+            {filteredUts.length > 0 && <div className="state-select__group-label">Union territories</div>}
+            {filteredUts.map((name) => <Option key={name} name={name} active={value === name} onChoose={choose} />)}
+            {!filteredStates.length && !filteredUts.length && <div className="state-select__empty">No location found.</div>}
+          </div>
+        </div>
+      )}
     </div>
   );
+}
+
+function Option({ name, active, onChoose }: { name: string; active: boolean; onChoose: (name: string) => void }) {
+  return <button type="button" className={`state-select__option ${active ? 'is-active' : ''}`} role="option" aria-selected={active} onClick={() => onChoose(name)}><span>{name}</span>{active && <span className="state-select__check">✓</span>}</button>;
 }

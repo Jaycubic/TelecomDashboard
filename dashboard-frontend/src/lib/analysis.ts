@@ -45,7 +45,7 @@ export function buildMetricSummaries(rows: KpiRow[]): MetricSummary[] {
   }> = [
     {
       key: 'avg_rating',
-      label: 'Average rating',
+      label: 'Avg Rating',
       description: 'Customer-reported overall call quality score',
       unit: '/ 5',
       direction: 'higherIsBetter',
@@ -53,7 +53,7 @@ export function buildMetricSummaries(rows: KpiRow[]): MetricSummary[] {
     },
     {
       key: 'call_drop_pct',
-      label: 'Dropped-call report share',
+      label: 'Call Drop Rate',
       description: 'Share of reports classified as dropped calls',
       unit: '%',
       direction: 'lowerIsBetter',
@@ -61,7 +61,7 @@ export function buildMetricSummaries(rows: KpiRow[]): MetricSummary[] {
     },
     {
       key: 'poor_voice_pct',
-      label: 'Poor voice-quality report share',
+      label: 'Voice Degradation Rate',
       description: 'Share of reports classified as poor voice quality',
       unit: '%',
       direction: 'lowerIsBetter',

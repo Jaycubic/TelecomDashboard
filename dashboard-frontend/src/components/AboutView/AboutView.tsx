@@ -1,64 +1,46 @@
 import './AboutView.css';
 
-export function AboutView() {
+interface AboutViewProps { onBack: () => void; }
+
+export function AboutView({ onBack }: AboutViewProps) {
   return (
     <main className="about-view">
+      <div className="about-view__topline"><button type="button" onClick={onBack}>← Back to reviews</button><span>Voice Call Quality Reviews</span></div>
       <section className="about-view__hero">
-        <div className="section-kicker">About this dashboard</div>
-        <h1>Explore customer-reported voice-call experience — compare Airtel and Jio, or focus on one network.</h1>
-        <p>
-          The dashboard starts with a national picture, moves to the state map for geographic exploration, and then reveals more detail when a user needs it. The network view controls whether the experience is comparative or operator-specific.
-        </p>
+        <div className="about-view__meta">Data current to: 2025</div>
+        <h1>About the data</h1>
+        <p>This dashboard turns customer-reported voice-call reviews into a geographic comparison of Airtel and Jio, while also allowing a single-network view.</p>
       </section>
-
       <section className="about-view__grid">
         <article>
-          <div className="section-kicker">How to read this</div>
-          <h2>Follow the information hierarchy.</h2>
-          <p><strong>1. National picture.</strong> Read the customer-report volume and the three main voice-call measures for the current filters.</p>
-          <p><strong>2. Geography.</strong> In comparison mode, each state shows which operator has the higher average customer rating. In a single-network view, the map shows how that network's rating varies across states.</p>
-          <p><strong>3. Detail.</strong> Select a state for exact values, then use the quality profile and call-setting breakdown to investigate the pattern.</p>
+          <div className="about-view__kicker">How to read this</div>
+          <h2>Start with the summary, then use the map.</h2>
+          <p><strong>1. Choose a view.</strong> Overview compares Airtel and Jio. Airtel or Jio focuses on one operator.</p>
+          <p><strong>2. Set scope.</strong> Choose a state or union territory and move both year handles together for a single year, or apart for a multi-year view.</p>
+          <p><strong>3. Read the map.</strong> In Overview, color shows which operator has the higher average rating. In a single-network view, lighter to darker operator color shows lower to higher reported average rating.</p>
         </article>
-
         <article>
-          <div className="section-kicker">Network view</div>
-          <h2>One dashboard, two ways of asking the question.</h2>
-          <p><strong>Compare Airtel + Jio:</strong> understand where customer-reported ratings differ and which network has the higher reported rating.</p>
-          <p><strong>Airtel only / Jio only:</strong> focus on one network without forcing the user to compare it with another operator.</p>
-        </article>
-
-        <article>
-          <div className="section-kicker">What the map means</div>
-          <h2>Color carries a specific meaning.</h2>
-          <div className="about-view__legend-row"><span className="about-view__swatch about-view__swatch--airtel" /> Airtel has the higher reported average rating</div>
-          <div className="about-view__legend-row"><span className="about-view__swatch about-view__swatch--jio" /> Jio has the higher reported average rating</div>
-          <div className="about-view__legend-row"><span className="about-view__swatch about-view__swatch--neutral" /> Average ratings are similar</div>
-          <div className="about-view__legend-row"><span className="about-view__hatch" /> Limited feedback</div>
-          <p className="about-view__note">In a single-network view, the selected operator's hue runs from lighter to darker to represent lower to higher reported average ratings. In comparison mode, red and blue identify operator advantage rather than rating quality. Color is not used to mean “good” or “bad”.</p>
-        </article>
-
-        <article>
-          <div className="section-kicker">What each measure means</div>
+          <div className="about-view__kicker">What each measure means</div>
           <h2>Use the numbers without guessing.</h2>
-          <p><strong>Customer reports:</strong> the number of customer-submitted voice-call reports represented by the current filters.</p>
-          <p><strong>Average customer rating:</strong> the reported overall call-quality score, on a 0–5 scale.</p>
-          <p><strong>Dropped-call report share:</strong> the share of customer reports classified as dropped calls. A lower share means fewer reports fall into that classification.</p>
-          <p><strong>Poor voice-quality report share:</strong> the share of customer reports classified as poor voice quality. A lower share means fewer reports fall into that classification.</p>
+          <p><strong>Total Customer Reviews:</strong> customer-submitted voice-call reviews represented by the active filters.</p>
+          <p><strong>Avg Rating:</strong> mean of the 1–5 user rating in the selected records.</p>
+          <p><strong>Call Drop Rate:</strong> share of selected reviews whose source category is “Call Dropped”.</p>
+          <p><strong>Voice Degradation Rate:</strong> share of selected reviews whose source category is “Poor Voice Quality”.</p>
         </article>
-
         <article>
-          <div className="section-kicker">What this doesn't show</div>
-          <h2>Reported patterns are not explanations.</h2>
-          <p>These are customer reports, not a census of every call. Who chooses to submit feedback can influence the pattern. Rural areas or people with poor connectivity may also be underrepresented.</p>
-          <p>The dashboard does not establish why a difference exists, and it does not include factors such as price, plan type, device type, or every aspect of network coverage.</p>
+          <div className="about-view__kicker">What this doesn’t show</div>
+          <h2>A reported pattern is not a complete network diagnosis.</h2>
+          <p>The data contains customer-submitted reviews, so reporting behavior can influence what appears in the dataset. The dashboard does not represent every call, every customer, or every place equally.</p>
+          <p>The dashboard also does not establish why an observed difference exists. It does not include every possible driver of network experience, such as plan, device, terrain, or infrastructure detail.</p>
+          <p>The supplied Jio records do not cover every year represented by the Airtel data, so a comparison across the full 2017–2025 range should be read with that availability difference in mind.</p>
         </article>
-
         <article>
-          <div className="section-kicker">Where this came from</div>
-          <h2>Trace the numbers back to the data.</h2>
-          <p>Customer-reported voice-call quality data for Airtel and Jio, covering the years available to the dashboard filters. The API exposes ratings, call-setting context, call-drop classifications, poor-voice classifications, location, and date.</p>
-          <p>State boundaries used by the map come from DataMeet's India administrative boundaries. Rows with invalid rating, year, or region values were excluded during ingestion rather than silently corrected.</p>
-          <p className="about-view__note">The final submission should record the dataset source, licence, access date, version, and any preparation or transformation steps used before the dashboard.</p>
+          <div className="about-view__kicker">Where this came from</div>
+          <h2>Government open data, transformed for comparison.</h2>
+          <p><strong>Source:</strong> <a href="https://www.data.gov.in/" target="_blank" rel="noreferrer">data.gov.in</a></p>
+          <p><strong>Dataset family:</strong> Voice Call Quality Customer Experience · Publisher: Telecom Regulatory Authority of India (TRAI).</p>
+          <p><strong>Accessed:</strong> 29 September 2026 · <strong>Licence:</strong> Government Open Data License — India.</p>
+          <p><strong>Preparation:</strong> Airtel and Jio records were combined without creating new observations. Text categories were counted to derive percentage measures. Location aliases were normalized to current state/union-territory names for filtering and mapping.</p>
         </article>
       </section>
     </main>

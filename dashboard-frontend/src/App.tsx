@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { TopBar } from './components/TopBar/TopBar';
 import { HeroStrip } from './components/HeroStrip/HeroStrip';
 import { FilterBar } from './components/FilterBar/FilterBar';
 import { IndiaMap } from './components/Map/IndiaMap';
-import { RadarProfile } from './components/RadarProfile/RadarProfile';
 import { PerformanceProfile } from './components/PerformanceProfile/PerformanceProfile';
+import { TrendChart } from './components/TrendChart/TrendChart';
 import { AboutView } from './components/AboutView/AboutView';
 import { useDashboardState } from './hooks/useDashboardState';
 import { useTheme } from './hooks/useTheme';
@@ -14,84 +13,53 @@ type DashboardView = 'overview' | 'about';
 
 export default function App() {
   const [activeView, setActiveView] = useState<DashboardView>('overview');
-  const {
-    selectedState,
-    setSelectedState,
-    yearRange,
-    setYearRange,
-    carrierVisibility,
-    setCarrierVisibility,
-    data,
-    loading,
-    error,
-  } = useDashboardState();
+  const { selectedState, setSelectedState, yearRange, setYearRange, carrierVisibility, setCarrierVisibility, data, loading, error } = useDashboardState();
   const { theme, toggleTheme } = useTheme();
-
-  const handleViewChange = (view: DashboardView) => {
-    setActiveView(view);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const openAbout = () => { setActiveView('about'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  const goBack = () => { setActiveView('overview'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   return (
     <div className="app" data-theme={theme}>
-      <TopBar
-        loading={loading}
-        error={error}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        activeView={activeView}
-        onViewChange={handleViewChange}
-      />
-
-      {activeView === 'about' ? (
-        <AboutView />
-      ) : (
+      {activeView === 'about' ? <AboutView onBack={goBack} /> : (
         <>
           <HeroStrip
             kpis={data.kpis}
+            filterOptions={data.filterOptions}
             selectedState={selectedState}
+            yearRange={yearRange}
             loading={loading}
+            error={error}
             carrierVisibility={carrierVisibility}
             onCarrierVisibilityChange={setCarrierVisibility}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            onOpenAbout={openAbout}
           />
-
           <main className="app__main">
-            <section className="geography-section" aria-label="Geographic view">
-              <div className="geography-workbench">
-                <div className="geography-grid">
+            <section className="geography-section" aria-label="India map exploration">
+              <div className="geography-grid">
+                <div className="map-column">
+                  <FilterBar
+                    selectedState={selectedState}
+                    onStateChange={setSelectedState}
+                    yearRange={yearRange}
+                    onYearRangeChange={setYearRange}
+                    filterOptions={data.filterOptions}
+                  />
                   <IndiaMap
                     stateRows={data.stateQuality?.states ?? []}
                     confidenceRows={data.confidence?.confidence ?? []}
                     carrierVisibility={carrierVisibility}
                     selectedState={selectedState}
                     onSelectState={setSelectedState}
+                    topology={data.mapTopology}
                     theme={theme}
-                  >
-                    <FilterBar
-                      embedded
-                      selectedState={selectedState}
-                      onStateChange={setSelectedState}
-                      yearRange={yearRange}
-                      onYearRangeChange={setYearRange}
-                      carrierVisibility={carrierVisibility}
-                      onCarrierVisibilityChange={setCarrierVisibility}
-                      filterOptions={data.filterOptions}
-                    />
-                  </IndiaMap>
-
-                  <aside className="insight-rail" aria-label="Supporting performance views">
-                    <RadarProfile
-                      radarAirtel={data.radarAirtel}
-                      radarJio={data.radarJio}
-                      carrierVisibility={carrierVisibility}
-                      theme={theme}
-                    />
-                    <PerformanceProfile
-                      indoorOutdoor={data.indoorOutdoor}
-                      carrierVisibility={carrierVisibility}
-                    />
-                  </aside>
+                  />
                 </div>
+                <aside className="insight-rail" aria-label="Supporting trend and call-setting views">
+                  <TrendChart trend={data.trend} carrierVisibility={carrierVisibility} yearRange={yearRange} theme={theme} />
+                  <PerformanceProfile indoorOutdoor={data.indoorOutdoor} carrierVisibility={carrierVisibility} />
+                </aside>
               </div>
             </section>
           </main>

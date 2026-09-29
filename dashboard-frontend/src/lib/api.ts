@@ -8,6 +8,8 @@ import type {
   Operator,
   RadarResponse,
   StateQualityResponse,
+  TrendResponse,
+  MapTopologyResponse,
 } from '../types';
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
@@ -56,7 +58,12 @@ export const api = {
   getIndoorOutdoor: (filters: GlobalFilters) =>
     getJson<IndoorOutdoorResponse>(`/api/indoor-outdoor${toQueryString(filters)}`),
 
+  getTrend: (filters: GlobalFilters) =>
+    getJson<TrendResponse>(`/api/trend${toQueryString(filters)}`),
+
   getFilterOptions: () => getJson<FilterOptionsResponse>('/api/filters/options'),
+
+  getIndiaMap: () => getJson<MapTopologyResponse>('/api/map/india'),
 };
 
 export { ApiError };

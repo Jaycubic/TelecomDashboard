@@ -92,9 +92,37 @@ export interface IndoorOutdoorResponse {
   breakdown: IndoorOutdoorRow[];
 }
 
+export interface FilterAreaOption {
+  name: string;
+  type: 'state' | 'union_territory';
+}
+
 export interface FilterOptionsResponse {
   regions: Region[];
   states: string[];
+  union_territories: string[];
+  areas: FilterAreaOption[];
   year_min: number;
   year_max: number;
+  total_records: string | number;
+}
+
+export interface TrendPoint {
+  operator: Operator;
+  year: number;
+  month: number | null;
+  satisfactory_pct: number | null;
+  total_reviews: string | number;
+}
+
+export interface TrendResponse {
+  filters: GlobalFilters;
+  granularity: 'month' | 'year';
+  points: TrendPoint[];
+}
+
+export interface MapTopologyResponse {
+  source: string;
+  licence?: string;
+  topology: unknown;
 }

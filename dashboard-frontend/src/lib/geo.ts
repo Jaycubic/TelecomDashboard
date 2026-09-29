@@ -1,8 +1,8 @@
-// src/lib/geo.ts
-import { geoMercator, geoPath, type GeoPath, type GeoPermissibleObjects } from 'd3-geo';
+import { geoMercator, geoPath } from 'd3-geo';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import topologyRaw from '../data/india-states-topo.json';
+import { normalizeAreaName } from './stateNameMap';
 
 export interface StateFeature {
   type: 'Feature';
@@ -10,29 +10,40 @@ export interface StateFeature {
   geometry: GeoJSON.Geometry;
 }
 
-const topology = topologyRaw as unknown as Topology<{
+const fallbackTopology = topologyRaw as unknown as Topology<{
   [key: string]: GeometryCollection<{ ST_NM: string }>;
 }>;
+export const INDIA_STATE_FEATURES: StateFeature[] = decodeStateFeatures(fallbackTopology);
 
-const objectKey = Object.keys(topology.objects)[0];
+export function decodeStateFeatures(rawTopology: unknown): StateFeature[] {
+  if (!rawTopology || typeof rawTopology !== 'object') return [];
+  const topology = rawTopology as Topology<Record<string, GeometryCollection<Record<string, unknown>>>>;
+  const objects = topology.objects ?? {};
+  const objectKey = Object.keys(objects).find((key) => key.toLowerCase().includes('state')) ?? Object.keys(objects)[0];
+  if (!objectKey) return [];
 
-/** All 36 state/UT features, decoded once at module load. */
-export const INDIA_STATE_FEATURES: StateFeature[] = (
-  feature(topology, topology.objects[objectKey]) as unknown as {
-    features: StateFeature[];
-  }
-).features;
+  const decoded = feature(topology, objects[objectKey] as never) as unknown as {
+    type: 'FeatureCollection';
+    features: Array<{ type: 'Feature'; properties?: Record<string, unknown> | null; geometry: GeoJSON.Geometry }>;
+  };
 
-/**
- * Builds a projection fitted to the given pixel box, plus the matching
- * path generator. Recompute on container resize for a responsive map.
- */
-export function buildProjection(width: number, height: number) {
+  return decoded.features.map((item) => ({
+    type: 'Feature',
+    properties: {
+      ST_NM: normalizeAreaName(
+        String(item.properties?.ST_NM ?? item.properties?.st_nm ?? item.properties?.NAME_1 ?? item.properties?.name ?? 'Unknown'),
+      ),
+    },
+    geometry: item.geometry,
+  }));
+}
+
+export function buildProjection(width: number, height: number, features: StateFeature[] = INDIA_STATE_FEATURES) {
   const featureCollection = {
     type: 'FeatureCollection' as const,
-    features: INDIA_STATE_FEATURES,
+    features,
   };
   const projection = geoMercator().fitSize([width, height], featureCollection as GeoJSON.FeatureCollection);
-  const path: GeoPath<unknown, GeoPermissibleObjects> = geoPath(projection);
+  const path = geoPath(projection);
   return { projection, path };
 }
