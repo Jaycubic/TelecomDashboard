@@ -323,7 +323,6 @@ export function IndiaMap({
             <CellTooltip
               {...tooltip}
               cell={cellRows.find((item) => item.key === tooltip.cellKey)}
-              carrierVisibility={carrierVisibility}
             />
           )}
 
@@ -365,7 +364,7 @@ function MapTooltip({ x, y, stateName, rows, lowConfidence, carrierVisibility }:
   );
 }
 
-function CellTooltip({ x, y, cell, carrierVisibility }: TooltipState & { cell?: SpatialCellWithKey; carrierVisibility: CarrierVisibility }) {
+function CellTooltip({ x, y, cell }: TooltipState & { cell?: SpatialCellWithKey }) {
   if (!cell) return null;
   const count = Number(cell.total_reviews) || 0;
   const rating = toNumber(cell.avg_rating);
