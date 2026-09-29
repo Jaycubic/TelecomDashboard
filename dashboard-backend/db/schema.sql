@@ -52,6 +52,12 @@ CREATE INDEX IF NOT EXISTS idx_cqr_calldrop_category   ON call_quality_reports (
 CREATE INDEX IF NOT EXISTS idx_cqr_operator_state_year
     ON call_quality_reports (operator, state_name, year);
 
+-- Spatially-scoped map cells: state + year/operator filters are followed by
+-- a latitude/longitude aggregation for the selected state's coverage view.
+CREATE INDEX IF NOT EXISTS idx_cqr_state_year_operator_geo
+    ON call_quality_reports (state_name, year, operator)
+    INCLUDE (latitude, longitude, rating, calldrop_category);
+
 -- Composite index for the region-level radar/KPI queries
 CREATE INDEX IF NOT EXISTS idx_cqr_operator_region
     ON call_quality_reports (operator, region);

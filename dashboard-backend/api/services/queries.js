@@ -228,6 +228,44 @@ async function getTrend(filters = {}) {
   };
 }
 
+async function getSpatialCells(filters = {}) {
+  if (!filters.state) {
+    return { filters, granularity: 'state', cells: [] };
+  }
+
+  const { whereSql, params } = buildWhereClause(filters);
+  const scopedWhere = `${whereSql ? `${whereSql} AND` : 'WHERE'} latitude IS NOT NULL AND longitude IS NOT NULL`;
+
+  // Aggregate the raw GPS observations into ~0.1-degree cells (~10–12 km).
+  // This keeps the frontend smooth while still showing geographic variation
+  // without introducing a district-level interpretation.
+  const sql = `
+    SELECT
+      operator,
+      ROUND((latitude::numeric / 0.1), 0) * 0.1 AS lat,
+      ROUND((longitude::numeric / 0.1), 0) * 0.1 AS lon,
+      COUNT(*) AS total_reviews,
+      ROUND(AVG(rating)::numeric, 2) AS avg_rating,
+      ROUND(100.0 * COUNT(*) FILTER (WHERE calldrop_category = 'Satisfactory')
+            / NULLIF(COUNT(*), 0), 2) AS satisfactory_pct,
+      ROUND(100.0 * COUNT(*) FILTER (WHERE calldrop_category = 'Call Dropped')
+            / NULLIF(COUNT(*), 0), 2) AS call_drop_pct,
+      ROUND(100.0 * COUNT(*) FILTER (WHERE calldrop_category = 'Poor Voice Quality')
+            / NULLIF(COUNT(*), 0), 2) AS poor_voice_pct
+    FROM call_quality_reports
+    ${scopedWhere}
+    GROUP BY operator, lat, lon
+    ORDER BY total_reviews DESC;
+  `;
+
+  const { rows } = await pool.query(sql, params);
+  return {
+    filters,
+    granularity: 'cell_0.1_degree',
+    cells: rows,
+  };
+}
+
 async function getSampleConfidence(filters = {}) {
   const { whereSql, params } = buildWhereClause(filters);
   const sql = `
@@ -256,5 +294,6 @@ module.exports = {
   getRadarProfile,
   getIndoorOutdoor,
   getTrend,
+  getSpatialCells,
   getSampleConfidence,
 };

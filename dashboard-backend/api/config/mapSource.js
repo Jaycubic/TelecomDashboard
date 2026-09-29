@@ -1,7 +1,7 @@
-// A pinned, web-ready India state/UT TopoJSON source.
-// It includes the current 36 state/UT units, including Ladakh and the merged
-// Dadra & Nagar Haveli and Daman & Diu. The API proxies it server-side so the
-// frontend does not depend on third-party CORS headers.
+// Geometry source for the India overview. The backend now prefers the
+// `vardhan-maps` state/UT GeoJSON package (current 36-state/UT catalogue).
+// MAP_SOURCE_URL remains as a defensive remote fallback for older deployments
+// where the package has not yet been installed.
 const MAP_SOURCE_URL = process.env.MAP_SOURCE_URL ||
   'https://cdn.jsdelivr.net/gh/udit-001/india-maps-data@2884453/topojson/india.json';
 

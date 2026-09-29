@@ -49,6 +49,7 @@ export default function App() {
                   <IndiaMap
                     stateRows={data.stateQuality?.states ?? []}
                     confidenceRows={data.confidence?.confidence ?? []}
+                    spatialCells={data.spatialCells?.cells ?? []}
                     carrierVisibility={carrierVisibility}
                     selectedState={selectedState}
                     onSelectState={setSelectedState}

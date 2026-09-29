@@ -9,6 +9,7 @@ import type {
   StateQualityResponse,
   TrendResponse,
   MapTopologyResponse,
+  SpatialCellsResponse,
 } from '../types';
 
 export interface CarrierVisibility {
@@ -24,6 +25,7 @@ interface DashboardData {
   trend: TrendResponse | null;
   filterOptions: FilterOptionsResponse | null;
   mapTopology: MapTopologyResponse | null;
+  spatialCells: SpatialCellsResponse | null;
 }
 
 const EMPTY_DATA: DashboardData = {
@@ -34,6 +36,7 @@ const EMPTY_DATA: DashboardData = {
   trend: null,
   filterOptions: null,
   mapTopology: null,
+  spatialCells: null,
 };
 
 export function useDashboardState() {
@@ -96,6 +99,35 @@ export function useDashboardState() {
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedState, yearRange[0], yearRange[1]]);
+
+  useEffect(() => {
+    if (!selectedState) {
+      setData((prev) => ({ ...prev, spatialCells: null }));
+      return;
+    }
+
+    let cancelled = false;
+    const spatialFilters: GlobalFilters = {
+      ...filters,
+      operator: carrierVisibility.Airtel === carrierVisibility.Jio
+        ? undefined
+        : carrierVisibility.Airtel
+          ? 'Airtel'
+          : 'Jio',
+    };
+
+    api.getStateMapPoints(spatialFilters)
+      .then((spatialCells) => {
+        if (!cancelled) setData((prev) => ({ ...prev, spatialCells }));
+      })
+      .catch((err) => {
+        console.error('Failed to load state map points:', err);
+        if (!cancelled) setData((prev) => ({ ...prev, spatialCells: null }));
+      });
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedState, yearRange[0], yearRange[1], carrierVisibility.Airtel, carrierVisibility.Jio]);
 
   useEffect(() => { refetch(); }, [refetch]);
 

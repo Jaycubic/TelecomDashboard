@@ -121,8 +121,26 @@ export interface TrendResponse {
   points: TrendPoint[];
 }
 
+export interface SpatialCell {
+  operator: Operator;
+  lat: number | string;
+  lon: number | string;
+  total_reviews: string | number;
+  avg_rating: string | number | null;
+  satisfactory_pct: string | number | null;
+  call_drop_pct: string | number | null;
+  poor_voice_pct: string | number | null;
+}
+
+export interface SpatialCellsResponse {
+  filters: GlobalFilters;
+  granularity: 'cell_0.1_degree' | 'state';
+  cells: SpatialCell[];
+}
+
 export interface MapTopologyResponse {
   source: string;
   licence?: string;
-  topology: unknown;
+  topology?: unknown;
+  state_features?: unknown;
 }
