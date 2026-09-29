@@ -41,6 +41,7 @@ export function AboutView({ onBack }: AboutViewProps) {
           <p><strong>Dataset family:</strong> Voice Call Quality Customer Experience · Publisher: Telecom Regulatory Authority of India (TRAI).</p>
           <p><strong>Accessed:</strong> 29 September 2026 · <strong>Licence:</strong> Government Open Data License — India.</p>
           <p><strong>Preparation:</strong> Airtel and Jio records were combined without creating new observations. Text categories were counted to derive percentage measures. Location aliases were normalized to current state/union-territory names for filtering and mapping.</p>
+          <p><strong>Map geometry:</strong> India and state/UT boundaries are sourced from <a href="https://github.com/yashveeeeeeer/india-geodata" target="_blank" rel="noreferrer">India Geodata</a>, using its States and Union Territories Admin2 layer. The dashboard renders those boundaries with D3/SVG and does not load district boundaries.</p>
         </article>
       </section>
     </main>

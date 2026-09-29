@@ -19,7 +19,7 @@ The India map answers: **where do Airtel and Jio's reported ratings differ acros
 ### State map
 When a state or union territory is selected, the national map is replaced by a focused state outline. The dashboard does **not** introduce district boundaries. Instead, nearby latitude/longitude observations are aggregated into approximately 0.1-degree spatial cells. Circle size represents customer-review volume; circle hue identifies Airtel or Jio in comparison mode, while a single operator uses that operator's brand hue.
 
-This follows the same interaction principle demonstrated by Vardhan Maps: eager state/UT geometry for the India overview, then a focused regional view with interactive spatial marks. The implementation deliberately stops at the state/UT level rather than loading district geometry. Source reference: Vardhan-Systems/vardhan-maps. The package documents current state/UT GeoJSON as eager and district geometry as a separate lazy layer, which is not used here.
+The geometry source is now the States and Union Territories Admin2 layer from yashveeeeeeer/india-geodata. Its repository documents this as the L1 state/UT boundary layer and provides the source shapefile under data/administrative/states/datameet/Admin2.*. The backend converts that source to GeoJSON once per process; the frontend continues to render it with the existing D3/SVG system. District geometry is never loaded.
 
 ## 4. Map design
 - **Overview:** state/UT choropleth comparison.
@@ -41,7 +41,7 @@ The interface keeps one dominant page title, a compact summary block, and a prim
 ## 8. Technical decisions
 The backend preserves the existing PostgreSQL/API contract and adds `/api/map/state-points`, which returns aggregated spatial review cells for a selected state/UT and active timeline/operator filters. A supporting PostgreSQL index was added for state/year/operator spatial queries.
 
-The frontend uses `vardhan-maps` state data for the preferred India state/UT geometry, with the existing TopoJSON retained as a fallback. The frontend continues to use SVG/D3 rendering rather than adding a heavy map engine, keeping the visual language consistent with the existing product while allowing smooth state-level spatial drill-down.
+The frontend consumes the backend-served GeoJSON derived from the India Geodata Admin2 state/UT source. The bundled state/UT TopoJSON remains only as an offline fallback. The frontend continues to use SVG/D3 rendering rather than adding a heavy map engine, keeping the visual language consistent with the existing product while allowing smooth state-level spatial drill-down.
 
 ## 9. UX improvements
 The state drill-down turns the map into an actual analytical interaction rather than a static geographic backdrop. Users can move from a national comparison to a specific state and immediately see where customer reviews are spatially concentrated, without introducing an arbitrary district hierarchy.
@@ -50,4 +50,4 @@ The state drill-down turns the map into an actual analytical interaction rather 
 The 0.1-degree spatial aggregation is deliberately a visualization compromise. It is not a district boundary, and it should not be interpreted as an administrative unit. It is used to reduce visual noise and rendering cost while keeping the underlying geographic signal. Exact review locations are not drawn individually.
 
 ## Provenance and attribution
-The Vardhan Maps reference is used for current India state/UT geometry conventions. Its repository describes the boundaries as best-effort, derived from OpenStreetMap and editorially corrected rather than survey-grade. See https://github.com/Vardhan-Systems/vardhan-maps for the source and attribution details. The dashboard's review data remain sourced from the project's supplied dataset and existing data.gov.in/telecom provenance.
+Map geometry source: yashveeeeeeer/india-geodata, States and Union Territories Admin2 layer (`data/administrative/states/datameet/Admin2.shp` + `.dbf`). Repository: https://github.com/yashveeeeeeer/india-geodata. The dashboard review data remain sourced from the project's supplied dataset and existing data.gov.in/telecom provenance.

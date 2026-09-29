@@ -139,8 +139,10 @@ export interface SpatialCellsResponse {
 }
 
 export interface MapTopologyResponse {
-  source: string;
+  type?: 'FeatureCollection' | string;
+  source?: string | { source?: string; repository?: string; dataset?: string; licence?: string; fallback?: boolean };
   licence?: string;
   topology?: unknown;
   state_features?: unknown;
+  features?: unknown;
 }

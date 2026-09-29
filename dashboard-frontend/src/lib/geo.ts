@@ -3,78 +3,93 @@ import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import topologyRaw from '../data/india-states-topo.json';
 import { normalizeAreaName } from './stateNameMap';
-import { states as vardhanStates } from 'vardhan-maps/data';
 
+/**
+ * State/UT geometry used by the dashboard.
+ *
+ * Primary geometry now comes from the India Geodata Admin2 state/UT layer
+ * served by the backend as GeoJSON. The bundled TopoJSON is retained only as
+ * an offline fallback so the D3/SVG dashboard stays usable if that source is
+ * temporarily unavailable. No district geometry is used by the renderer.
+ */
 export interface StateFeature {
   type: 'Feature';
-  properties: { ST_NM: string };
+  properties: { ST_NM: string; [key: string]: unknown };
   geometry: GeoJSON.Geometry;
 }
 
 const fallbackTopology = topologyRaw as unknown as Topology<{
   [key: string]: GeometryCollection<{ ST_NM: string }>;
 }>;
-const VARDHAN_STATE_FEATURES: StateFeature[] = (() => {
-  try {
-    const collection = vardhanStates as unknown as {
-      type: 'FeatureCollection';
-      features: Array<{ type: 'Feature'; properties?: Record<string, unknown> | null; geometry: GeoJSON.Geometry }>;
-    };
-    return (collection.features ?? []).map((item) => ({
-      type: 'Feature',
+
+export const INDIA_STATE_FEATURES: StateFeature[] = decodeStateFeatures(fallbackTopology);
+
+function extractFeatureCollection(raw: unknown): Array<{
+  type: 'Feature';
+  properties?: Record<string, unknown> | null;
+  geometry: GeoJSON.Geometry;
+}> {
+  if (!raw || typeof raw !== 'object') return [];
+  const candidate = raw as { type?: string; features?: unknown; state_features?: unknown };
+  const source = Array.isArray(candidate.features)
+    ? candidate.features
+    : Array.isArray(candidate.state_features)
+      ? candidate.state_features
+      : [];
+  return source.filter((item): item is { type: 'Feature'; properties?: Record<string, unknown> | null; geometry: GeoJSON.Geometry } => {
+    if (!item || typeof item !== 'object') return false;
+    const value = item as { type?: string; geometry?: unknown };
+    return value.type === 'Feature' && Boolean(value.geometry);
+  });
+}
+
+function normalizeFeatures(features: Array<{
+  type: 'Feature';
+  properties?: Record<string, unknown> | null;
+  geometry: GeoJSON.Geometry;
+}>): StateFeature[] {
+  return features
+    .map((item) => ({
+      type: 'Feature' as const,
       properties: {
-        ST_NM: normalizeAreaName(String(item.properties?.name ?? item.properties?.NAME_1 ?? item.properties?.ST_NM ?? 'Unknown')),
+        ...(item.properties ?? {}),
+        ST_NM: normalizeAreaName(
+          String(item.properties?.ST_NM
+            ?? item.properties?.st_nm
+            ?? item.properties?.STNAME
+            ?? item.properties?.STATE_NAME
+            ?? item.properties?.NAME_1
+            ?? item.properties?.NAME
+            ?? item.properties?.name
+            ?? 'Unknown'),
+        ),
       },
       geometry: item.geometry,
-    }));
-  } catch {
-    return [];
-  }
-})();
-
-// Prefer Vardhan's current 36-state/UT catalogue. Keep the bundled legacy
-// topology as a defensive fallback so the map remains usable if the package
-// data ever fails to load. Vardhan's package documents states as eager, light
-// weight GeoJSON while districts are lazy; we intentionally use only states/UTs.
-export const INDIA_STATE_FEATURES: StateFeature[] = VARDHAN_STATE_FEATURES.length >= 30
-  ? VARDHAN_STATE_FEATURES
-  : decodeStateFeatures(fallbackTopology);
+    }))
+    .filter((item) => item.properties.ST_NM !== 'Unknown');
+}
 
 export function decodeStateFeatures(rawTopology: unknown): StateFeature[] {
   if (!rawTopology || typeof rawTopology !== 'object') return [];
 
-  // Accept either standard GeoJSON FeatureCollection (Vardhan API payload) or
-  // the legacy TopoJSON fallback used by older deployments.
-  const maybeGeoJson = rawTopology as { type?: string; features?: Array<{ type: 'Feature'; properties?: Record<string, unknown> | null; geometry: GeoJSON.Geometry }> };
-  if (maybeGeoJson.type === 'FeatureCollection' && Array.isArray(maybeGeoJson.features)) {
-    return maybeGeoJson.features.map((item) => ({
-      type: 'Feature',
-      properties: {
-        ST_NM: normalizeAreaName(String(item.properties?.name ?? item.properties?.ST_NM ?? item.properties?.NAME_1 ?? 'Unknown')),
-      },
-      geometry: item.geometry,
-    }));
-  }
+  const direct = extractFeatureCollection(rawTopology);
+  if (direct.length) return normalizeFeatures(direct);
 
   const topology = rawTopology as Topology<Record<string, GeometryCollection<Record<string, unknown>>>>;
   const objects = topology.objects ?? {};
-  const objectKey = Object.keys(objects).find((key) => key.toLowerCase().includes('state')) ?? Object.keys(objects)[0];
+  const objectKey = Object.keys(objects).find((key) => key.toLowerCase().includes('state'));
   if (!objectKey) return [];
 
   const decoded = feature(topology, objects[objectKey] as never) as unknown as {
     type: 'FeatureCollection';
-    features: Array<{ type: 'Feature'; properties?: Record<string, unknown> | null; geometry: GeoJSON.Geometry }>;
+    features: Array<{
+      type: 'Feature';
+      properties?: Record<string, unknown> | null;
+      geometry: GeoJSON.Geometry;
+    }>;
   };
 
-  return decoded.features.map((item) => ({
-    type: 'Feature',
-    properties: {
-      ST_NM: normalizeAreaName(
-        String(item.properties?.ST_NM ?? item.properties?.st_nm ?? item.properties?.NAME_1 ?? item.properties?.name ?? 'Unknown'),
-      ),
-    },
-    geometry: item.geometry,
-  }));
+  return normalizeFeatures(decoded.features);
 }
 
 export function buildProjection(width: number, height: number, features: StateFeature[] = INDIA_STATE_FEATURES) {

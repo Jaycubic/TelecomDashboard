@@ -21,7 +21,7 @@ The filter catalogue contains the current 28 Indian states and 8 union territori
 
 ## Map source
 
-`/api/map/india` proxies a pinned India state/UT TopoJSON snapshot. The frontend has a bundled fallback so a map-source fetch failure does not prevent the dashboard from rendering its analytical data.
+`/api/map/india` serves the same bundled 36-feature state/UT TopoJSON used by the frontend. The map intentionally stops at state/Union Territory boundaries; district geometry is not loaded.
 
 ## Data calculations
 
@@ -40,3 +40,7 @@ returns aggregated 0.1-degree latitude/longitude cells for the selected state.
 The dashboard uses these cells as a point-density layer; it does not expose
 district boundaries. Aggregation keeps the map responsive while preserving the
 spatial signal present in the source latitude/longitude fields.
+
+## State/UT map source
+
+The `/api/map/india` endpoint now uses the States and Union Territories Admin2 layer from `yashveeeeeeer/india-geodata` as its primary geometry source. The backend converts the repository shapefile pair to GeoJSON once per process and keeps it cached for the D3/SVG frontend. District and lower-level administrative geometry is not loaded. The repository documents this as the state/UT level (36 areas) and lists the dataset under `data/administrative/states/datameet/Admin2.*`.

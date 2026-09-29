@@ -46,10 +46,17 @@ export function IndiaMap({
   const [hasAnimated, setHasAnimated] = useState(false);
 
   const features = useMemo<StateFeature[]>(() => {
-    // The Vardhan state/UT GeoJSON is the preferred source. The API topology
-    // remains as a fallback for deployments where the package is unavailable.
-    const decoded = topology ? decodeStateFeatures(topology.state_features ?? topology.topology) : [];
-    return INDIA_STATE_FEATURES.length >= 30 ? INDIA_STATE_FEATURES : (decoded.length >= 30 ? decoded : INDIA_STATE_FEATURES);
+    // Primary source: India Geodata Admin2 GeoJSON supplied by the backend.
+    // Fallback: the bundled state/UT TopoJSON snapshot if the remote source is
+    // unavailable. Both paths feed the same D3/SVG renderer and never load
+    // district geometry.
+    const apiFeatures = topology ? decodeStateFeatures({
+      type: topology.type,
+      features: topology.features,
+      state_features: topology.state_features,
+      topology: topology.topology,
+    }) : [];
+    return apiFeatures.length >= 30 ? apiFeatures : INDIA_STATE_FEATURES;
   }, [topology]);
 
   useEffect(() => {
@@ -316,6 +323,7 @@ export function IndiaMap({
             <CellTooltip
               {...tooltip}
               cell={cellRows.find((item) => item.key === tooltip.cellKey)}
+              carrierVisibility={carrierVisibility}
             />
           )}
 
@@ -357,7 +365,7 @@ function MapTooltip({ x, y, stateName, rows, lowConfidence, carrierVisibility }:
   );
 }
 
-function CellTooltip({ x, y, cell }: TooltipState & { cell?: SpatialCellWithKey }) {
+function CellTooltip({ x, y, cell, carrierVisibility }: TooltipState & { cell?: SpatialCellWithKey; carrierVisibility: CarrierVisibility }) {
   if (!cell) return null;
   const count = Number(cell.total_reviews) || 0;
   const rating = toNumber(cell.avg_rating);
