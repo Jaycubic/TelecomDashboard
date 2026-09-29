@@ -55,11 +55,6 @@ export function useDashboardState() {
   const activeAbortRef = useRef<AbortController | null>(null);
   const refetchRef = useRef<((force?: boolean) => void) | null>(null);
 
-  const filters: GlobalFilters = {
-    state: selectedState,
-    year_start: Math.min(yearRange[0], yearRange[1]),
-    year_end: Math.max(yearRange[0], yearRange[1]),
-  };
 
   // One configuration request, then all map geometry stays local and synchronous.
   useEffect(() => {

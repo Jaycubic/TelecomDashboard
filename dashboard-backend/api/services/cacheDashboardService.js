@@ -129,8 +129,8 @@ async function cacheDashboardData() {
 
     // 3. State summaries are optional. Spatial point caches are deliberately NOT
     // pre-warmed: they are the most expensive queries and are now cached on demand.
+    const allAreas = [...STATES, ...UNION_TERRITORIES];
     if (PREWARM_STATES) {
-      const allAreas = [...STATES, ...UNION_TERRITORIES];
       const BATCH_SIZE = 2;
       for (let i = 0; i < allAreas.length; i += BATCH_SIZE) {
         const batch = allAreas.slice(i, i + BATCH_SIZE);
@@ -143,7 +143,7 @@ async function cacheDashboardData() {
     }
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    logger.info({ totalAreas: allAreas.length, durationSeconds: duration }, 'Successfully pre-warmed dashboard Redis cache');
+    logger.info({ totalAreas: PREWARM_STATES ? allAreas.length : 0, durationSeconds: duration }, 'Successfully pre-warmed dashboard Redis cache');
   } catch (error) {
     logger.error(error, 'Error in cacheDashboardData:');
   } finally {
