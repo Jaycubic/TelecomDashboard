@@ -75,14 +75,6 @@ export function FilterBar({ selectedState, onStateChange, yearRange, onYearRange
         </div>
         <div className="year-slider__ends"><span>{minYear}</span><span>{maxYear}</span></div>
       </div>
-      <button
-        type="button"
-        className="filterbar__reset"
-        aria-label="Reset location and timeline filters"
-        title="Reset filters"
-        disabled={!selectedState && low === minYear && high === maxYear}
-        onClick={() => { onStateChange(undefined); onYearRangeChange([minYear, maxYear]); }}
-      >×</button>
     </div>
   );
 }

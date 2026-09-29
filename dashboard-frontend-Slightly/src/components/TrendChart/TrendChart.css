@@ -1,0 +1,13 @@
+.trend-card { background: var(--color-surface-1); border: 1px solid var(--color-border); border-radius: 16px; padding: 13px 14px 8px; min-height: 0; display: flex; flex-direction: column; overflow: visible; }
+.trend-card__header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.trend-card__title-row { display: inline-flex; align-items: center; gap: 7px; }
+.trend-card h2 { margin: 0; font-size: 12.5px; letter-spacing: -.02em; }
+.trend-card__period { margin-top: 3px; color: var(--color-ink-tertiary); font-size: 8px; }
+.trend-card__legend { display: flex; gap: 9px; padding-top: 1px; }
+.trend-card__legend span { display: inline-flex; align-items: center; gap: 5px; color: var(--color-ink-secondary); font-size: 8px; font-weight: 750; }
+.trend-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.trend-dot--airtel { background: var(--color-airtel); }
+.trend-dot--jio { background: var(--color-jio); }
+.trend-card__chart { flex: 1; min-height: 186px; margin-top: 3px; position: relative; }
+.trend-card__empty { min-height: 186px; display: grid; align-content: center; gap: 3px; color: var(--color-ink-secondary); font-size: 8.5px; }
+.trend-card__empty strong { color: var(--color-ink); font-size: 9.5px; }

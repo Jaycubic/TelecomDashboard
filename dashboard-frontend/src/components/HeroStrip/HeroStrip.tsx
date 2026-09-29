@@ -91,8 +91,10 @@ export function HeroStrip({
           </button>
           <div className="hero__facts" aria-label="Current filtered summary">
             <Fact
-              strong={loading ? '—' : reports.toLocaleString('en-IN')}
-              label="Total Customer Reviews"
+              strong={loading ? '—' : bothVisible ? <>
+                <span className="metric-airtel">{(toNumber(airtel?.total_reports) ?? 0).toLocaleString('en-IN')}</span> <em>vs</em> <span className="metric-jio">{(toNumber(jio?.total_reports) ?? 0).toLocaleString('en-IN')}</span>
+              </> : reports.toLocaleString('en-IN')}
+              label={bothVisible ? 'Total Customer Reviews · Airtel vs Jio' : 'Total Customer Reviews'}
               info={(
                 <>
                   <p className="info-popover__title">Review Volume Matrix</p>

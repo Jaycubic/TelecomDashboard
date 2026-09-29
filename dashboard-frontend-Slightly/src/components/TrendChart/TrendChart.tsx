@@ -10,31 +10,17 @@ interface TrendChartProps { trend: TrendResponse | null; carrierVisibility: Carr
 
 export function TrendChart({ trend, carrierVisibility, yearRange, theme }: TrendChartProps) {
   const monthly = yearRange[0] === yearRange[1];
-
-  // Build the complete timeline first. Missing source periods stay in the
-  // dataset as nulls instead of being filtered away. Recharts then leaves a
-  // visible gap in the line, which correctly communicates "no data" rather
-  // than implying a zero-value collapse.
-  const periodKeys = monthly
-    ? Array.from({ length: 12 }, (_, index) => String(index + 1))
-    : Array.from({ length: Math.max(0, yearRange[1] - yearRange[0] + 1) }, (_, index) => String(yearRange[0] + index));
-
-  const keyed = new Map<string, { period: string; Airtel: number | null; Jio: number | null }>(
-    periodKeys.map((key) => [key, { period: monthly ? monthLabel(Number(key)) : key, Airtel: null, Jio: null }]),
-  );
-
+  const keyed = new Map<string, { period: string; Airtel: number | null; Jio: number | null }>();
   for (const point of trend?.points ?? []) {
     const key = monthly ? String(point.month) : String(point.year);
-    const row = keyed.get(key);
-    if (!row) continue;
+    const row = keyed.get(key) ?? { period: monthly ? monthLabel(point.month) : String(point.year), Airtel: null, Jio: null };
     if (point.operator === 'Airtel') row.Airtel = point.satisfactory_pct == null ? null : Number(point.satisfactory_pct);
     if (point.operator === 'Jio') row.Jio = point.satisfactory_pct == null ? null : Number(point.satisfactory_pct);
+    keyed.set(key, row);
   }
-
-  const data = periodKeys.map((key) => keyed.get(key)!);
-  const visible = data;
-  const hasVisibleData = visible.some((row) => (carrierVisibility.Airtel && row.Airtel != null) || (carrierVisibility.Jio && row.Jio != null));
-  const noData = !hasVisibleData;
+  const data = [...keyed.entries()].sort(([a], [b]) => Number(a) - Number(b)).map(([, row]) => row);
+  const visible = data.filter((row) => (carrierVisibility.Airtel ? row.Airtel != null : true) || (carrierVisibility.Jio ? row.Jio != null : true));
+  const noData = visible.length === 0;
   const chartTheme = CHART_THEME[theme];
   const periodLabel = monthly ? `Monthly · ${yearRange[0]}` : `Annual · ${yearRange[0]}–${yearRange[1]}`;
 
