@@ -1,11 +1,8 @@
 // server.js
 require('dotenv').config();
-const http = require('http');
 const express = require('express');
 const cors = require('cors');
-const compression = require('compression');
 const morgan = require('morgan');
-const { WebSocketServer } = require('ws');
 
 const pool = require('./config/db');
 const redisClient = require('./utils/redisClient');
@@ -24,12 +21,18 @@ const app = express();
 const PORT = parseInt(process.env.PORT || '8094', 10);
 
 const corsOriginEnv = process.env.CORS_ORIGIN || '*';
+// A literal '*' must be passed to `cors()` as the string '*', not as a
+// one-element array ['*'] -- the cors package treats an array as an
+// allow-list to match the request's Origin header against verbatim, so
+// ['*'] would never match a real origin like http://192.168.8.10:5173
+// and Access-Control-Allow-Origin would silently never be sent. Confirmed
+// by testing an actual cross-origin fetch against this server.
 const corsOrigins = corsOriginEnv === '*' ? '*' : corsOriginEnv.split(',').map((s) => s.trim());
 app.use(cors({ origin: corsOrigins }));
-app.use(compression({ threshold: 1024, level: 5 }));
 app.use(express.json());
 app.use(morgan('dev'));
 
+// Health check endpoint reporting both PostgreSQL and Redis status
 app.get('/health', async (req, res) => {
   let dbStatus = 'ok';
   let dbError = null;
@@ -42,6 +45,7 @@ app.get('/health', async (req, res) => {
 
   const redisStatus = redisClient.isOpen ? 'connected' : 'disconnected';
   const isHealthy = dbStatus === 'ok';
+
   res.status(isHealthy ? 200 : 503).json({
     status: isHealthy && redisStatus === 'connected' ? 'ok' : 'degraded',
     db: dbStatus,
@@ -50,6 +54,7 @@ app.get('/health', async (req, res) => {
   });
 });
 
+// Cache control endpoint for explicit cache invalidation/cleaning
 app.post('/api/cache/clean', async (req, res) => {
   try {
     const deletedCount = await cleanCache();
@@ -67,67 +72,29 @@ app.use('/api/filters', filtersRouter);
 app.use('/api/trend', trendRouter);
 app.use('/api/map', mapRouter);
 
+// 404
 app.use((req, res) => {
   res.status(404).json({ error: `No route for ${req.method} ${req.originalUrl}` });
 });
 
+// Central error handler -- keeps stack traces out of API responses
 app.use((err, req, res, next) => {
   console.error(err);
   const status = err.message && err.message.startsWith('Invalid') ? 400 : 500;
   res.status(status).json({ error: err.message || 'Internal server error' });
 });
 
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server, path: '/ws' });
-const sockets = new Set();
-
-function broadcastRefresh(version) {
-  const message = JSON.stringify({ type: 'dashboard:refresh', version, at: new Date().toISOString() });
-  for (const socket of sockets) {
-    if (socket.readyState === 1) {
-      try { socket.send(message); } catch { /* stale socket; close handler cleans it */ }
-    }
-  }
-}
-
-wss.on('connection', (socket) => {
-  sockets.add(socket);
-  socket.send(JSON.stringify({ type: 'dashboard:connected', at: new Date().toISOString() }));
-  socket.on('close', () => sockets.delete(socket));
-  socket.on('error', () => sockets.delete(socket));
-});
-
-// The cache layer publishes this lightweight event after a successful refresh.
-const refreshSubscriber = redisClient.duplicate();
-refreshSubscriber.on('error', (err) => logger.warn({ err: err.message }, 'Redis refresh subscriber error'));
-(async () => {
-  try {
-    await refreshSubscriber.connect();
-    await refreshSubscriber.subscribe('dashboard:refresh', (message) => {
-      try {
-        const payload = JSON.parse(message);
-        broadcastRefresh(payload.version || Date.now());
-      } catch {
-        broadcastRefresh(Date.now());
-      }
-    });
-    logger.info('Dashboard websocket invalidation channel connected');
-  } catch (err) {
-    logger.warn({ err: err.message }, 'Dashboard websocket invalidation channel unavailable');
-  }
-})();
-
-server.listen(PORT, '0.0.0.0', () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   logger.info(`Call quality dashboard API listening on http://0.0.0.0:${PORT}`);
-  logger.info(`Dashboard websocket invalidation endpoint available at ws://0.0.0.0:${PORT}/ws`);
+  // Start Redis pre-warming and recurring cron refresh service
   startCronJob();
 });
 
+// Graceful shutdown
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM signal received: closing HTTP server and Redis connection...');
   server.close(async () => {
     try {
-      if (refreshSubscriber.isOpen) await refreshSubscriber.quit();
       if (redisClient.isOpen) await redisClient.quit();
       await pool.end();
     } catch (e) {

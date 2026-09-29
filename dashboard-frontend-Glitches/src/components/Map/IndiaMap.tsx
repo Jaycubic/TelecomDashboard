@@ -12,7 +12,6 @@ interface IndiaMapProps {
   stateRows: StateQualityRow[];
   confidenceRows: ConfidenceRow[];
   spatialCells: SpatialCell[];
-  spatialLoading?: boolean;
   carrierVisibility: CarrierVisibility;
   selectedState: string | undefined;
   onSelectState: (state: string | undefined) => void;
@@ -35,7 +34,6 @@ export function IndiaMap({
   stateRows,
   confidenceRows,
   spatialCells,
-  spatialLoading = false,
   carrierVisibility,
   selectedState,
   onSelectState,
@@ -46,7 +44,6 @@ export function IndiaMap({
   const [size, setSize] = useState({ width: 820, height: 410 });
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [hasAnimated, setHasAnimated] = useState(false);
-  const [mapTransitioning, setMapTransitioning] = useState(false);
 
   const features = useMemo<StateFeature[]>(() => {
     // Primary source: India Geodata Admin2 GeoJSON supplied by the backend.
@@ -78,17 +75,11 @@ export function IndiaMap({
     if (!hasAnimated && stateRows.length) setHasAnimated(true);
   }, [stateRows.length, hasAnimated]);
 
-  useEffect(() => {
-    setMapTransitioning(true);
-    const timer = window.setTimeout(() => setMapTransitioning(false), 260);
-    return () => window.clearTimeout(timer);
-  }, [selectedState]);
-
   const selectedGeo = selectedState ? normalizeAreaName(selectedState) : undefined;
   const bothVisible = carrierVisibility.Airtel && carrierVisibility.Jio;
   const selectedOperator = carrierVisibility.Airtel ? 'Airtel' : 'Jio';
   const focusedFeature = selectedGeo ? features.find((feature) => normalizeAreaName(feature.properties.ST_NM) === selectedGeo) : undefined;
-  const displayFeatures = useMemo(() => (focusedFeature ? [focusedFeature] : features), [focusedFeature, features]);
+  const displayFeatures = focusedFeature ? [focusedFeature] : features;
   const focused = Boolean(selectedGeo && focusedFeature);
 
   const { path, projection } = useMemo(
@@ -158,11 +149,7 @@ export function IndiaMap({
     ...cell,
     key: `${cell.operator}-${cell.lat}-${cell.lon}-${index}`,
   })), [spatialCells]);
-  const visibleCellRows = useMemo(
-    () => cellRows.filter((cell) => carrierVisibility[cell.operator]),
-    [cellRows, carrierVisibility],
-  );
-  const maxCellReviews = useMemo(() => Math.max(1, ...visibleCellRows.map((cell) => Number(cell.total_reviews) || 0)), [visibleCellRows]);
+  const maxCellReviews = useMemo(() => Math.max(1, ...cellRows.map((cell) => Number(cell.total_reviews) || 0)), [cellRows]);
 
   const title = focused
     ? bothVisible
@@ -229,7 +216,7 @@ export function IndiaMap({
       </div>
       <div className="map-card__body">
         <div className="map-card__canvas" ref={containerRef}>
-          <svg width={size.width} height={size.height} className={`map-svg ${focused ? 'map-svg--focused' : ''} ${mapTransitioning ? 'map-svg--transitioning' : ''}`} role="img" aria-label={ariaLabel}>
+          <svg width={size.width} height={size.height} className={`map-svg ${focused ? 'map-svg--focused' : ''}`} role="img" aria-label={ariaLabel}>
             <defs>
               <pattern id="map-hatch" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
                 <line x1="0" y1="0" x2="0" y2="6" stroke={theme === 'dark' ? '#FFFFFF' : '#111827'} strokeOpacity=".24" strokeWidth="1.2" />
@@ -282,7 +269,7 @@ export function IndiaMap({
             {focused && (
               <>
                 <g aria-hidden="true">
-                  {visibleCellRows.map((cell) => {
+                  {cellRows.map((cell) => {
                     const lat = Number(cell.lat);
                     const lon = Number(cell.lon);
                     if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
@@ -335,19 +322,11 @@ export function IndiaMap({
           {focused && tooltip?.cellKey && (
             <CellTooltip
               {...tooltip}
-              cell={visibleCellRows.find((item) => item.key === tooltip.cellKey)}
+              cell={cellRows.find((item) => item.key === tooltip.cellKey)}
             />
           )}
 
-          {focused && spatialLoading && (
-            <div className="map-loading" aria-live="polite">
-              <span className="map-loading__pulse map-loading__pulse--one" />
-              <span className="map-loading__pulse map-loading__pulse--two" />
-              <span className="map-loading__pulse map-loading__pulse--three" />
-              <span className="map-loading__label">Loading mapped reviews…</span>
-            </div>
-          )}
-          {focused && !spatialLoading && !visibleCellRows.length && (
+          {focused && !cellRows.length && (
             <div className="map-empty-state">
               <strong>No mapped customer reviews</strong>
               <span>There are no latitude/longitude observations for this selection.</span>

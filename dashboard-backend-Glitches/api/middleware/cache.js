@@ -9,7 +9,6 @@ const redisClient = require('../utils/redisClient');
 const logger = require('../utils/logger');
 
 const DEFAULT_TTL = parseInt(process.env.CACHE_TTL_SECONDS || '3600', 10);
-const inflightHandlers = new Map();
 
 function makeCacheKey(baseUrl, path, query = {}) {
   const sortedQuery = Object.keys(query)
@@ -38,7 +37,6 @@ function withCache(handlerReturningData, ttlSeconds = DEFAULT_TTL) {
         const cached = await redisClient.get(key);
         if (cached) {
           res.set('X-Cache', 'HIT');
-          res.set('Cache-Control', `private, max-age=${Math.min(ttlSeconds, 30)}, stale-while-revalidate=${Math.min(ttlSeconds, 120)}`);
           return res.json(JSON.parse(cached));
         }
       } catch (err) {
@@ -47,22 +45,10 @@ function withCache(handlerReturningData, ttlSeconds = DEFAULT_TTL) {
     }
 
     try {
-      const existing = inflightHandlers.get(key);
-      if (existing) {
-        const data = await existing;
-        res.set('X-Cache', 'COALESCED');
-        return res.json(data);
-      }
-
-      const promise = Promise.resolve().then(() => handlerReturningData(req, res));
-      inflightHandlers.set(key, promise);
-      const data = await promise;
-      if (res.headersSent) return;
+      const data = await handlerReturningData(req, res);
+      if (res.headersSent) return; // handler already responded (e.g. validation error)
 
       res.set('X-Cache', 'MISS');
-      if (!res.get('Cache-Control')) {
-        res.set('Cache-Control', `private, max-age=${Math.min(ttlSeconds, 30)}, stale-while-revalidate=${Math.min(ttlSeconds, 120)}`);
-      }
       res.json(data);
 
       if (redisClient.isOpen && data !== undefined) {
@@ -70,11 +56,8 @@ function withCache(handlerReturningData, ttlSeconds = DEFAULT_TTL) {
           logger.warn({ key, err: err.message }, 'Redis SET failed (non-fatal)');
         });
       }
-      return data;
     } catch (err) {
       next(err);
-    } finally {
-      inflightHandlers.delete(key);
     }
   };
 }

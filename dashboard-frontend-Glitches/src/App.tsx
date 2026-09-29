@@ -13,7 +13,7 @@ type DashboardView = 'overview' | 'about';
 
 export default function App() {
   const [activeView, setActiveView] = useState<DashboardView>('overview');
-  const { selectedState, setSelectedState, yearRange, setYearRange, carrierVisibility, setCarrierVisibility, data, loading, spatialLoading, error } = useDashboardState();
+  const { selectedState, setSelectedState, yearRange, setYearRange, carrierVisibility, setCarrierVisibility, data, loading, error } = useDashboardState();
   const { theme, toggleTheme } = useTheme();
   const openAbout = () => { setActiveView('about'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
   const goBack = () => { setActiveView('overview'); window.scrollTo({ top: 0, behavior: 'smooth' }); };
@@ -50,7 +50,6 @@ export default function App() {
                     stateRows={data.stateQuality?.states ?? []}
                     confidenceRows={data.confidence?.confidence ?? []}
                     spatialCells={data.spatialCells?.cells ?? []}
-                    spatialLoading={spatialLoading}
                     carrierVisibility={carrierVisibility}
                     selectedState={selectedState}
                     onSelectState={setSelectedState}

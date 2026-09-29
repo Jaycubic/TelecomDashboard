@@ -21,29 +21,54 @@ const { STATES, UNION_TERRITORIES } = require('../config/stateCatalog');
 
 let isRunning = false;
 const CACHE_TTL = parseInt(process.env.CACHE_TTL_SECONDS || '3600', 10);
-const PREWARM_STATES = String(process.env.PREWARM_STATE_SUMMARIES || 'false').toLowerCase() === 'true';
-const REFRESH_CRON = process.env.CACHE_REFRESH_CRON || '*/30 * * * *';
 
 async function cacheArea(areaName, yearMin, yearMax) {
-  const query = { state: areaName, year_start: String(yearMin), year_end: String(yearMax) };
-  const filter = { state: areaName, year_start: yearMin, year_end: yearMax };
+  const query = {
+    state: areaName,
+    year_start: String(yearMin),
+    year_end: String(yearMax),
+  };
+  const filter = {
+    state: areaName,
+    year_start: yearMin,
+    year_end: yearMax,
+  };
+
   try {
-    const [kpis, stateQuality, confidence, indoorOutdoor, trend] = await Promise.all([
+    const [kpis, stateQuality, confidence, indoorOutdoor, trend, cellsBoth, cellsAirtel, cellsJio, radarAirtel, radarJio] = await Promise.all([
       getKpis(filter),
       getStateQuality(filter),
       getSampleConfidence(filter),
       getIndoorOutdoor(filter),
       getTrend(filter),
+      getSpatialCells(filter),
+      getSpatialCells({ ...filter, operator: 'Airtel' }),
+      getSpatialCells({ ...filter, operator: 'Jio' }),
+      getRadarProfile('Airtel', filter).catch(() => null),
+      getRadarProfile('Jio', filter).catch(() => null),
     ]);
-    await Promise.all([
+
+    const setOps = [
       redisClient.setEx(makeCacheKey('/api/kpis', '/', query), CACHE_TTL, JSON.stringify(kpis)),
       redisClient.setEx(makeCacheKey('/api/state-quality', '/', query), CACHE_TTL, JSON.stringify(stateQuality)),
       redisClient.setEx(makeCacheKey('/api/state-quality', '/confidence', query), CACHE_TTL, JSON.stringify(confidence)),
       redisClient.setEx(makeCacheKey('/api/indoor-outdoor', '/', query), CACHE_TTL, JSON.stringify(indoorOutdoor)),
       redisClient.setEx(makeCacheKey('/api/trend', '/', query), CACHE_TTL, JSON.stringify(trend)),
-    ]);
+      redisClient.setEx(makeCacheKey('/api/map', '/state-points', query), CACHE_TTL, JSON.stringify(cellsBoth)),
+      redisClient.setEx(makeCacheKey('/api/map', '/state-points', { ...query, operator: 'Airtel' }), CACHE_TTL, JSON.stringify(cellsAirtel)),
+      redisClient.setEx(makeCacheKey('/api/map', '/state-points', { ...query, operator: 'Jio' }), CACHE_TTL, JSON.stringify(cellsJio)),
+    ];
+
+    if (radarAirtel) {
+      setOps.push(redisClient.setEx(makeCacheKey('/api/radar', '/Airtel', query), CACHE_TTL, JSON.stringify(radarAirtel)));
+    }
+    if (radarJio) {
+      setOps.push(redisClient.setEx(makeCacheKey('/api/radar', '/Jio', query), CACHE_TTL, JSON.stringify(radarJio)));
+    }
+
+    await Promise.all(setOps);
   } catch (err) {
-    logger.error(err, `Failed to cache summary data for area: ${areaName}`);
+    logger.error(err, `Failed to cache data for area: ${areaName}`);
   }
 }
 
@@ -127,19 +152,12 @@ async function cacheDashboardData() {
     // 2. Cache All-India views
     await cacheNationalViews(yearMin, yearMax);
 
-    // 3. State summaries are optional. Spatial point caches are deliberately NOT
-    // pre-warmed: they are the most expensive queries and are now cached on demand.
-    if (PREWARM_STATES) {
-      const allAreas = [...STATES, ...UNION_TERRITORIES];
-      const BATCH_SIZE = 2;
-      for (let i = 0; i < allAreas.length; i += BATCH_SIZE) {
-        const batch = allAreas.slice(i, i + BATCH_SIZE);
-        await Promise.all(batch.map((area) => cacheArea(area, yearMin, yearMax)));
-      }
-    }
-
-    if (redisClient.isOpen) {
-      await redisClient.publish('dashboard:refresh', JSON.stringify({ version: Date.now() }));
+    // 3. Cache each State & Union Territory in batches
+    const allAreas = [...STATES, ...UNION_TERRITORIES];
+    const BATCH_SIZE = 4;
+    for (let i = 0; i < allAreas.length; i += BATCH_SIZE) {
+      const batch = allAreas.slice(i, i + BATCH_SIZE);
+      await Promise.all(batch.map((area) => cacheArea(area, yearMin, yearMax)));
     }
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
@@ -152,9 +170,10 @@ async function cacheDashboardData() {
 }
 
 function startCronJob() {
-  logger.info(`Cron job started: refreshing dashboard cache on ${REFRESH_CRON}.`);
+  logger.info('Cron job started: Refreshing dashboard cache every 10 minutes.');
 
-  cron.schedule(REFRESH_CRON, cacheDashboardData);
+  // Run every 10 minutes to keep cache warm and refreshed
+  cron.schedule('*/10 * * * *', cacheDashboardData);
 
   // Initial warming run on startup after a 2-second grace period
   setTimeout(() => {

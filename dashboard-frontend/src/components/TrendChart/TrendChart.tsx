@@ -44,11 +44,11 @@ export function TrendChart({ trend, carrierVisibility, yearRange, theme }: Trend
       <div className="trend-card__period">{periodLabel}</div>
       <div className="trend-card__chart" role="img" aria-label={buildAriaLabel(visible, carrierVisibility, periodLabel)}>
         {noData ? <div className="trend-card__empty"><strong>No trend records for this selection.</strong><span>Try another location or year.</span></div> : (
-          <ResponsiveContainer width="100%" height={138}>
-            <LineChart data={visible} margin={{ top: 7, right: 7, bottom: 1, left: -21 }}>
+          <ResponsiveContainer width="100%" height={186}>
+            <LineChart data={visible} margin={{ top: 8, right: 9, bottom: 6, left: 2 }}>
               <CartesianGrid stroke={chartTheme.grid} vertical={false} />
               <XAxis dataKey="period" tick={{ fontSize: 8, fill: chartTheme.axis, fontFamily: 'Inter, sans-serif' }} tickLine={false} axisLine={false} minTickGap={10} />
-              <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 7.7, fill: chartTheme.axis, fontFamily: 'Inter, sans-serif' }} tickLine={false} axisLine={false} width={36} />
+              <YAxis domain={[0, 100]} ticks={[0, 25, 50, 75, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 7.7, fill: chartTheme.axis, fontFamily: 'Inter, sans-serif' }} tickLine={false} axisLine={false} width={36} label={{ value: 'Satisfactory reviews (%)', angle: -90, position: 'insideLeft', offset: -1, style: { fontSize: 7, fill: chartTheme.axis, fontFamily: 'Inter, sans-serif' } }} />
               <Tooltip contentStyle={{ background: 'var(--color-surface-1)', border: '1px solid var(--color-border-strong)', borderRadius: 8, fontSize: 9 }} formatter={(value: any, name: any) => [value == null ? '—' : `${Number(value).toFixed(1)}%`, String(name)]} />
               {carrierVisibility.Airtel && <Line type="monotone" connectNulls={false} dataKey="Airtel" stroke={OPERATOR_COLOR.Airtel} strokeWidth={2} dot={{ r: 2.2, fill: OPERATOR_COLOR.Airtel }} activeDot={{ r: 3.5 }} />}
               {carrierVisibility.Jio && <Line type="monotone" connectNulls={false} dataKey="Jio" stroke={OPERATOR_COLOR.Jio} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 2.2, fill: OPERATOR_COLOR.Jio }} activeDot={{ r: 3.5 }} />}
