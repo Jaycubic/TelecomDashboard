@@ -49,7 +49,7 @@ export function TrendChart({ trend, carrierVisibility, yearRange, theme }: Trend
               <CartesianGrid stroke={chartTheme.grid} vertical={false} />
               <XAxis dataKey="period" tick={{ fontSize: 8, fill: chartTheme.axis, fontFamily: 'Inter, sans-serif' }} tickLine={false} axisLine={false} minTickGap={10} />
               <YAxis domain={[0, 100]} tickFormatter={(value) => `${value}%`} tick={{ fontSize: 7.7, fill: chartTheme.axis, fontFamily: 'Inter, sans-serif' }} tickLine={false} axisLine={false} width={36} />
-              <Tooltip contentStyle={{ background: 'var(--color-surface-1)', border: '1px solid var(--color-border-strong)', borderRadius: 8, fontSize: 9 }} formatter={(value: number | null, name: string) => [value == null ? '—' : `${Number(value).toFixed(1)}%`, name]} />
+              <Tooltip contentStyle={{ background: 'var(--color-surface-1)', border: '1px solid var(--color-border-strong)', borderRadius: 8, fontSize: 9 }} formatter={(value: any, name: any) => [value == null ? '—' : `${Number(value).toFixed(1)}%`, String(name)]} />
               {carrierVisibility.Airtel && <Line type="monotone" connectNulls={false} dataKey="Airtel" stroke={OPERATOR_COLOR.Airtel} strokeWidth={2} dot={{ r: 2.2, fill: OPERATOR_COLOR.Airtel }} activeDot={{ r: 3.5 }} />}
               {carrierVisibility.Jio && <Line type="monotone" connectNulls={false} dataKey="Jio" stroke={OPERATOR_COLOR.Jio} strokeWidth={2} strokeDasharray="5 4" dot={{ r: 2.2, fill: OPERATOR_COLOR.Jio }} activeDot={{ r: 3.5 }} />}
             </LineChart>
