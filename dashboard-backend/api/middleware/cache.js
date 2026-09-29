@@ -5,41 +5,43 @@
 // directly) rather than fail the request -- staleness/slowness is a much
 // smaller problem for a dashboard than an outage.
 
-const redis = require('../config/redis');
+const redisClient = require('../utils/redisClient');
+const logger = require('../utils/logger');
 
-const DEFAULT_TTL = parseInt(process.env.CACHE_TTL_SECONDS || '300', 10);
+const DEFAULT_TTL = parseInt(process.env.CACHE_TTL_SECONDS || '3600', 10);
+
+function makeCacheKey(baseUrl, path, query = {}) {
+  const sortedQuery = Object.keys(query)
+    .sort()
+    .filter((k) => query[k] !== undefined && query[k] !== '')
+    .map((k) => `${k}=${query[k]}`)
+    .join('&');
+  return `cache:${baseUrl}${path}?${sortedQuery}`;
+}
 
 function buildKey(req) {
-  const sortedQuery = Object.keys(req.query)
-    .sort()
-    .map((k) => `${k}=${req.query[k]}`)
-    .join('&');
-  return `cache:${req.baseUrl}${req.path}?${sortedQuery}`;
+  return makeCacheKey(req.baseUrl, req.path, req.query);
 }
 
 /**
  * Wrap an async route handler `fn(req, res)` that normally does
  * `res.json(data)`. This middleware intercepts that, caches the payload,
  * and replays it on subsequent hits.
- *
- * Usage:
- *   router.get('/kpis', withCache(async (req) => {
- *     const data = await getKpis(req.query);
- *     return data;
- *   }));
  */
 function withCache(handlerReturningData, ttlSeconds = DEFAULT_TTL) {
   return async (req, res, next) => {
     const key = buildKey(req);
 
-    try {
-      const cached = await redis.get(key);
-      if (cached) {
-        res.set('X-Cache', 'HIT');
-        return res.json(JSON.parse(cached));
+    if (redisClient.isOpen) {
+      try {
+        const cached = await redisClient.get(key);
+        if (cached) {
+          res.set('X-Cache', 'HIT');
+          return res.json(JSON.parse(cached));
+        }
+      } catch (err) {
+        logger.warn({ key, err: err.message }, 'Redis GET failed, falling through to DB');
       }
-    } catch (err) {
-      console.error('Redis GET failed, falling through to DB:', err.message);
     }
 
     try {
@@ -49,13 +51,15 @@ function withCache(handlerReturningData, ttlSeconds = DEFAULT_TTL) {
       res.set('X-Cache', 'MISS');
       res.json(data);
 
-      redis.set(key, JSON.stringify(data), 'EX', ttlSeconds).catch((err) => {
-        console.error('Redis SET failed (non-fatal):', err.message);
-      });
+      if (redisClient.isOpen && data !== undefined) {
+        redisClient.setEx(key, ttlSeconds, JSON.stringify(data)).catch((err) => {
+          logger.warn({ key, err: err.message }, 'Redis SET failed (non-fatal)');
+        });
+      }
     } catch (err) {
       next(err);
     }
   };
 }
 
-module.exports = { withCache };
+module.exports = { withCache, buildKey, makeCacheKey };

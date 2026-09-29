@@ -41,6 +41,13 @@ The dashboard uses these cells as a point-density layer; it does not expose
 district boundaries. Aggregation keeps the map responsive while preserving the
 spatial signal present in the source latitude/longitude fields.
 
-## State/UT map source
-
 The `/api/map/india` endpoint now uses the States and Union Territories Admin2 layer from `yashveeeeeeer/india-geodata` as its primary geometry source. The backend converts the repository shapefile pair to GeoJSON once per process and keeps it cached for the D3/SVG frontend. District and lower-level administrative geometry is not loaded. The repository documents this as the state/UT level (36 areas) and lists the dataset under `data/administrative/states/datameet/Admin2.*`.
+
+## Redis Caching & Pre-warming Service
+
+- **Singleton Client**: `utils/redisClient.js` creates and manages a resilient connection with exponential backoff reconnect strategy.
+- **100MB Memory Cap & Eviction**: Configured with `maxmemory 100mb` and `allkeys-lru` eviction policy to guarantee memory usage remains strictly bounded.
+- **Pre-warming Cron Service**: `services/cacheDashboardService.js` warms and refreshes All-India and per-state queries every 10 minutes (`*/10 * * * *`) and runs on server startup.
+- **Zero-Latency Switching**: Switching between All India and individual states hits pre-warmed Redis keys (`X-Cache: HIT`), eliminating DB query latency.
+- **Cache Invalidation & Cleaning**: Keys are cached with 1-hour TTLs and refreshed continuously. Manual clearing is available via `POST /api/cache/clean`.
+

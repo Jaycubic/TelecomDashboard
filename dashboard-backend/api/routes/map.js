@@ -239,14 +239,9 @@ async function getIndiaGeometry() {
   return loadPromise;
 }
 
-router.get('/india', async (req, res, next) => {
-  try {
-    const geometry = await getIndiaGeometry();
-    res.json(geometry);
-  } catch (err) {
-    next(err);
-  }
-});
+router.get('/india', withCache(async () => {
+  return getIndiaGeometry();
+}, 86400));
 
 router.get('/state-points', withCache(async (req) => {
   if (!req.query.state) {
