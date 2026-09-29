@@ -1,0 +1,76 @@
+.filterbar { position: sticky; top: 62px; z-index: 90; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); background: var(--color-surface-1); }
+.filterbar__inner { width: min(1480px, calc(100% - 48px)); min-height: 62px; margin: 0 auto; display: flex; align-items: end; gap: 16px; padding: 9px 0; }
+.filterbar__group, .filterbar__field { display: flex; flex-direction: column; gap: 5px; }
+.filterbar__field--state { flex: 0 0 170px; }
+.filterbar__field--years { flex: 1 1 auto; min-width: 300px; max-width: 510px; }
+.filterbar__eyebrow { font-size: 9px; letter-spacing: .09em; text-transform: uppercase; color: var(--color-ink-secondary); font-weight: 800; }
+
+.filterbar__years-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.year-mode { display: inline-flex; gap: 2px; padding: 2px; border: 1px solid var(--color-border); background: var(--color-surface-2); border-radius: 7px; }
+.year-mode button { border: 0; background: transparent; color: var(--color-ink-tertiary); padding: 3px 7px; border-radius: 5px; font-size: 9px; font-weight: 700; }
+.year-mode button.is-active { color: var(--color-ink); background: var(--color-surface-1); }
+.single-year-control { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; min-height: 32px; }
+.single-year-control input, .range-year-control input { width: 100%; accent-color: var(--color-ink); }
+.single-year-control output, .range-year-values output { min-width: 42px; text-align: center; padding: 5px 7px; border-radius: 7px; background: var(--color-surface-2); color: var(--color-ink); font-size: 10px; font-weight: 800; font-variant-numeric: tabular-nums; border: 1px solid var(--color-border); }
+.range-year-control { display: grid; gap: 4px; }
+.range-year-values { display: flex; align-items: center; gap: 7px; font-size: 9px; color: var(--color-ink-tertiary); }
+.range-year-track { position: relative; height: 24px; display: grid; align-items: center; }
+.range-year-track__fill { position: absolute; height: 4px; left: 0; right: 0; top: 50%; transform: translateY(-50%); background: var(--color-ink); opacity: .22; border-radius: 999px; pointer-events: none; }
+.range-year-track input { position: absolute; inset: 0; pointer-events: none; appearance: none; background: transparent; }
+.range-year-track input::-webkit-slider-runnable-track { height: 4px; background: transparent; }
+.range-year-track input::-moz-range-track { height: 4px; background: transparent; }
+.range-year-track input::-webkit-slider-thumb { appearance: none; pointer-events: auto; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--color-bg); background: var(--color-ink); box-shadow: 0 0 0 1px var(--color-border-strong); margin-top: -4px; cursor: pointer; }
+.range-year-track input::-moz-range-thumb { pointer-events: auto; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--color-bg); background: var(--color-ink); box-shadow: 0 0 0 1px var(--color-border-strong); cursor: pointer; }
+.year-control-hint { display: flex; justify-content: space-between; gap: 10px; font-size: 8px; line-height: 1.2; color: var(--color-ink-tertiary); }
+.year-control-available { flex: 0 0 auto; font-variant-numeric: tabular-nums; }
+.filterbar__reset { margin-left: auto; height: 32px; border-radius: 8px; padding: 0 11px; border: 1px solid var(--color-border); background: transparent; color: var(--color-ink-secondary); font-size: 11px; }
+.filterbar__reset:hover:not(:disabled) { color: var(--color-ink); border-color: var(--color-border-strong); background: var(--color-surface-hover); }
+.filterbar__reset:disabled { opacity: .45; cursor: default; }
+
+/* Compact custom state picker: fixed-height dropdown, always opens downward. */
+.state-select { position: relative; width: 100%; z-index: 130; }
+.state-select__trigger { width: 100%; height: 32px; border-radius: 8px; border: 1px solid var(--color-border); background: var(--color-surface-2); color: var(--color-ink); padding: 0 9px; outline: none; font-size: 11px; display: flex; align-items: center; justify-content: space-between; gap: 9px; text-align: left; }
+.state-select__trigger:hover { border-color: var(--color-border-strong); }
+.state-select.is-open .state-select__trigger { border-color: var(--color-focus); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-focus) 12%, transparent); }
+.state-select__chevron { width: 7px; height: 7px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(45deg) translateY(-2px); transition: transform .16s ease; opacity: .7; flex: 0 0 auto; }
+.state-select.is-open .state-select__chevron { transform: rotate(225deg) translateY(-1px); }
+.state-select__menu { position: absolute; top: calc(100% + 4px); left: 0; right: 0; max-height: 200px; border: 1px solid var(--color-border-strong); border-radius: 10px; background: var(--color-surface-1); box-shadow: var(--shadow-md); overflow: hidden; z-index: 120; }
+.state-select__search-wrap { padding: 7px; border-bottom: 1px solid var(--color-border); background: var(--color-surface-2); }
+.state-select__search { width: 100%; height: 27px; border-radius: 7px; border: 1px solid var(--color-border); background: var(--color-surface-1); color: var(--color-ink); padding: 0 8px; outline: none; font-size: 10px; }
+.state-select__search:focus { border-color: var(--color-focus); }
+.state-select__options { max-height: 155px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--color-border-strong) transparent; }
+.state-select__options::-webkit-scrollbar { width: 7px; }
+.state-select__options::-webkit-scrollbar-thumb { background: var(--color-border-strong); border-radius: 999px; }
+.state-select__option { width: 100%; min-height: 27px; padding: 5px 8px; border: 0; background: transparent; color: var(--color-ink-secondary); display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; font-size: 10px; }
+.state-select__option:hover, .state-select__option.is-active { background: var(--color-surface-hover); color: var(--color-ink); }
+.state-select__option.is-active { font-weight: 700; }
+.state-select__check { color: var(--color-ink); font-size: 10px; }
+.state-select__empty { padding: 14px 10px; color: var(--color-ink-tertiary); font-size: 10px; text-align: center; }
+
+/* Embedded filter treatment: controls belong to the geographic workbench. */
+.filterbar--embedded { position: static; z-index: auto; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; background: var(--color-surface-1); }
+.filterbar--embedded .filterbar__inner { width: auto; min-height: 0; padding: 10px 14px 9px; display: grid; grid-template-columns: minmax(170px, 190px) minmax(280px, 1fr) auto; align-items: end; gap: 13px; }
+.filterbar--embedded .filterbar__field { gap: 4px; }
+.filterbar--embedded .filterbar__field--state { flex: none; }
+.filterbar--embedded .filterbar__field--years { min-width: 0; max-width: none; }
+.filterbar--embedded .state-select__trigger { height: 30px; }
+.filterbar--embedded .single-year-control { min-height: 30px; }
+.filterbar--embedded .range-year-track { height: 20px; }
+.filterbar--embedded .range-year-values output { padding: 4px 6px; font-size: 9px; }
+.filterbar--embedded .filterbar__reset { height: 30px; }
+
+@media (max-width: 1040px) {
+  .filterbar__inner { flex-wrap: wrap; align-items: end; }
+  .filterbar__field--years { flex: 1 1 360px; max-width: none; }
+  .filterbar__reset { margin-left: 0; }
+  .filterbar--embedded .filterbar__inner { grid-template-columns: minmax(160px, 180px) minmax(220px, 1fr) auto; }
+}
+@media (max-width: 760px) {
+  .filterbar { position: static; }
+  .filterbar__inner { width: min(100% - 28px, 1480px); gap: 10px; }
+  .filterbar__field--state, .filterbar__field--years { flex: 1 1 100%; }
+  .filterbar--embedded .filterbar__inner { grid-template-columns: 1fr auto; align-items: end; }
+  .filterbar--embedded .filterbar__field--state, .filterbar--embedded .filterbar__field--years { width: 100%; min-width: 0; }
+  .filterbar--embedded .filterbar__field--years { grid-column: 1 / -1; }
+  .filterbar--embedded .filterbar__reset { margin-left: 0; }
+}

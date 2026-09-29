@@ -1,0 +1,24 @@
+{
+  "_comment": "Single source of truth for state -> zonal region mapping, read by ingestion/ingest.py. Keys here are the CANONICAL state names (matching src/data/india-states-topo.json's ST_NM property in the frontend, and the output of canonicalize_state_name() in ingest.py) -- not the raw spellings that show up in the source CSVs. Region grouping follows the North/West vs East/South split your interviewee (Hiya) framed the operator strongholds around.",
+
+  "North": [
+    "NCT of Delhi", "Punjab", "Haryana", "Uttar Pradesh", "Uttarakhand",
+    "Himachal Pradesh", "Jammu & Kashmir", "Ladakh", "Chandigarh", "Rajasthan"
+  ],
+  "West": [
+    "Maharashtra", "Gujarat", "Goa", "Madhya Pradesh", "Chhattisgarh",
+    "Dadara & Nagar Havelli", "Daman & Diu"
+  ],
+  "East": [
+    "West Bengal", "Bihar", "Jharkhand", "Odisha",
+    "Sikkim", "Assam", "Arunanchal Pradesh", "Manipur", "Meghalaya",
+    "Mizoram", "Nagaland", "Tripura"
+  ],
+  "South": [
+    "Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh", "Telangana",
+    "Puducherry", "Andaman & Nicobar Island", "Lakshadweep"
+  ],
+
+  "_unmapped_state_policy": "Any state_name not found in the lists above is loaded with region = NULL rather than guessed. Check the 'unmapped_states.log' the ingestion script writes after each run and add missing names here -- do not silently default them to a region, that would misrepresent the data in the choropleth.",
+  "_note_on_ladakh": "Ladakh is listed under North for region-level filtering, but the DataMeet boundaries bundled with the frontend don't include it as its own shape (pre-2019 source), so it won't render as a distinct state on the map -- it'll just be absent there, not misattributed."
+}
