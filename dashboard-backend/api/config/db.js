@@ -1,23 +1,39 @@
 // config/db.js
-// Plain `pg` Pool rather than an ORM: the dashboard's real workload is a
-// handful of aggregate SQL queries over ~1.5M rows, and hand-written SQL
-// (see services/queries.js) is both faster and easier to reason about
-// than building the same aggregates through an ORM's query builder.
-// If you'd rather keep everything in Sequelize for consistency with your
-// other services, swap this file for the connection.js you already have
-// and pass `sequelize.query(sql, { replacements })` instead of pool.query().
+// PostgreSQL connection for the dashboard API.
+//
+// Important: load the API's .env from a path relative to this file rather
+// than relying on process.cwd(). This prevents DB credentials from becoming
+// undefined when the server is started from another directory (for example
+// through PM2, a system service, or `node path/to/server.js`).
+const path = require('path');
+require('dotenv').config({
+  path: path.resolve(__dirname, '..', '.env'),
+});
 
-require('dotenv').config();
 const { Pool } = require('pg');
 
-const schema = process.env.DBPB_SCHEMA || process.env.DBP_SCHEMA || 'public';
+const envString = (primary, fallback, defaultValue = '') => {
+  const value = process.env[primary] ?? process.env[fallback] ?? defaultValue;
+  return typeof value === 'string' ? value : String(value);
+};
+
+const schema = envString('DBPB_SCHEMA', 'DBP_SCHEMA', 'public');
+const database = envString('DBPB_NAME', 'DBP_NAME', 'dashboard');
+const user = envString('DBPB_USER', 'DBP_USER', 'jofrey');
+const password = envString('DBPB_PASSWORD', 'DBP_PASSWORD', '');
+const host = envString('DBPB_HOST', 'DBP_HOST', 'localhost');
+const portValue = envString('DBPB_PORT', 'DBP_PORT', '5432');
+const port = Number.parseInt(portValue, 10);
 
 const pool = new Pool({
-  database: process.env.DBPB_NAME || process.env.DBP_NAME || 'dashboard',
-  user: process.env.DBPB_USER || process.env.DBP_USER || 'jofrey',
-  password: process.env.DBPB_PASSWORD || process.env.DBP_PASSWORD || '',
-  host: process.env.DBPB_HOST || process.env.DBP_HOST || 'localhost',
-  port: parseInt(process.env.DBPB_PORT || process.env.DBP_PORT || '5432', 10),
+  database,
+  user,
+  // pg's SCRAM authentication requires a string password. Explicitly
+  // normalizing it here prevents `client password must be a string` when an
+  // environment/config value is injected as a non-string.
+  password,
+  host,
+  port: Number.isFinite(port) ? port : 5432,
   options: `-c search_path=${schema}`,
   max: 10,
   idleTimeoutMillis: 30000,

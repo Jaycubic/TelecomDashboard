@@ -10,6 +10,8 @@ const stateQualityRouter = require('./routes/stateQuality');
 const radarRouter = require('./routes/radar');
 const indoorOutdoorRouter = require('./routes/indoorOutdoor');
 const filtersRouter = require('./routes/filters');
+const trendRouter = require('./routes/trend');
+const mapRouter = require('./routes/map');
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '8094', 10);
@@ -40,6 +42,8 @@ app.use('/api/state-quality', stateQualityRouter);
 app.use('/api/radar', radarRouter);
 app.use('/api/indoor-outdoor', indoorOutdoorRouter);
 app.use('/api/filters', filtersRouter);
+app.use('/api/trend', trendRouter);
+app.use('/api/map', mapRouter);
 
 // 404
 app.use((req, res) => {

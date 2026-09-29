@@ -1,0 +1,33 @@
+.hero { background: var(--color-bg); border-bottom: 1px solid var(--color-border); }
+.hero__inner { width: min(1480px, calc(100% - 48px)); margin: 0 auto; padding: 22px 0 18px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(520px, .86fr); gap: 32px; align-items: center; }
+.hero__copy { min-width: 0; }
+.hero__meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 9px; color: var(--color-ink-tertiary); }
+.hero__about-link { border: 0; background: transparent; padding: 0; color: var(--color-ink-secondary); font-size: 9px; text-decoration: underline; text-underline-offset: 2px; }
+.hero__about-link:hover { color: var(--color-ink); }
+.hero__status { color: var(--color-caution); font-weight: 700; }
+.hero__copy h1 { margin: 7px 0 12px; max-width: 690px; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(31px, 3.25vw, 47px); line-height: .98; letter-spacing: -.045em; font-weight: 500; }
+.hero__network { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.view-button { min-height: 34px; padding: 0 16px; border: 1px solid var(--color-border-strong); border-radius: 999px; background: var(--color-surface-2); color: var(--color-ink-secondary); font-size: 10.5px; font-weight: 750; box-shadow: 0 1px 0 rgba(16,24,40,.03); transition: transform .15s ease, background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.view-button:hover { color: var(--color-ink); border-color: var(--color-ink-tertiary); transform: translateY(-1px); }
+.view-button.is-active { color: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.04), 0 0 18px color-mix(in srgb, var(--view-accent) 22%, transparent); border-color: var(--view-accent); background: var(--view-accent); }
+.view-button--compare { --view-accent: #3b4048; }
+.view-button--airtel { --view-accent: var(--color-airtel); }
+.view-button--jio { --view-accent: var(--color-jio); }
+.hero__context { margin-top: 9px; color: var(--color-ink-tertiary); font-size: 8.5px; }
+.hero__right { position: relative; min-width: 0; padding-top: 8px; }
+.theme-button { position: absolute; top: -1px; right: 0; width: 28px; height: 28px; border: 1px solid var(--color-border); border-radius: 9px; background: var(--color-surface-1); color: var(--color-ink-secondary); font-size: 13px; }
+.theme-button:hover { color: var(--color-ink); border-color: var(--color-border-strong); }
+.hero__facts { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1px; margin-top: 12px; background: var(--color-border); border: 1px solid var(--color-border-strong); border-radius: 15px; overflow: visible; box-shadow: 0 6px 18px rgba(16,24,40,.04); }
+.hero-fact { min-height: 77px; padding: 13px 15px 11px; background: var(--color-surface-1); }
+.hero-fact:nth-child(1) { border-radius: 14px 0 0 0; }
+.hero-fact:nth-child(2) { border-radius: 0 14px 0 0; }
+.hero-fact:nth-child(3) { border-radius: 0 0 0 14px; }
+.hero-fact:nth-child(4) { border-radius: 0 0 14px 0; }
+.hero-fact__value { display: flex; flex-wrap: wrap; align-items: baseline; gap: 5px; min-height: 25px; font-size: 20px; line-height: 1.1; font-weight: 800; letter-spacing: -.025em; font-variant-numeric: tabular-nums; color: var(--color-ink); }
+.hero-fact__value em { color: var(--color-ink-tertiary); font-size: 9px; font-style: normal; font-weight: 700; }
+.metric-airtel { color: var(--color-airtel); }
+.metric-jio { color: var(--color-jio); }
+.hero-fact__label { margin-top: 6px; display: flex; align-items: center; gap: 6px; color: var(--color-ink-secondary); font-size: 9px; line-height: 1.35; font-weight: 800; letter-spacing: .055em; text-transform: none; }
+.hero-fact__label span { min-width: 0; }
+@media (max-width: 1080px) { .hero__inner { grid-template-columns: 1fr; gap: 18px; } .hero__right { padding-top: 0; } .theme-button { top: -4px; } }
+@media (max-width: 720px) { .hero__inner { width: min(100% - 28px, 1480px); padding-top: 18px; } .hero__network { gap: 10px; } .view-button { padding: 0 14px; } .hero__facts { grid-template-columns: 1fr 1fr; } .hero-fact__value { font-size: 17px; } .hero-fact__label { font-size: 8px; } }
