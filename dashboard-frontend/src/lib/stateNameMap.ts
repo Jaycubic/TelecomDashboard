@@ -36,7 +36,7 @@ const CANONICAL_BY_KEY: Record<string, string> = {
   kerala: 'Kerala',
   ladakh: 'Ladakh',
   lakshadweep: 'Lakshadweep',
-  madhya pradesh: 'Madhya Pradesh',
+  'madhya pradesh': 'Madhya Pradesh',
   maharashtra: 'Maharashtra',
   manipur: 'Manipur',
   meghalaya: 'Meghalaya',
